@@ -36,7 +36,7 @@ class RASPValueError(RASPError):
 		super().__init__(*a)
 
 
-debug = True
+debug = False
 def debprint(*a,**kw):
 	if debug:
 		print(*a,**kw)

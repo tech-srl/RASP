@@ -27,7 +27,7 @@ class StopException(Exception):
 	def __init__(self):
 		super().__init__()
 
-debug = True
+debug = False
 
 def debprint(*a,**kw):
 	if debug:
