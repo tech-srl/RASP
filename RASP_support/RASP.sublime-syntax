@@ -1,0 +1,128 @@
+%YAML 1.2
+---
+## for Mac, keep in: ~/Library/Application Support/Sublime Text 3/Packages/User/RASP.sublime-syntax
+
+
+
+# See http://www.sublimetext.com/docs/3/syntax.html
+
+# how to name the scopes: https://www.sublimetext.com/docs/3/scope_naming.html
+#         (easiest solution though: open some python file in sublime,
+#          write a 'parallel' python expression to what you want to name,
+#          and cmd-alt-p while cursor on it to see how python sublime-syntax scopes it)
+# not very helpful, but: what this file looks like for python:
+#            https://github.com/sublimehq/Packages/blob/master/Python/Python.sublime-syntax
+
+name: RASP
+file_extensions: [rasp]
+scope: source.rasp
+
+variables:
+    identifier_continue: '[[:alnum:]_]'
+    identifier: '\b[[:alpha:]_]{{identifier_continue}}*\b'
+
+contexts:
+  # The prototype context is prepended to all contexts but those setting
+  # meta_include_prototype: false.
+  prototype:
+    - include: comments
+
+  main:
+    # The main context is the initial starting point of our syntax.
+    # Include other contexts from here (or specify them directly).
+    - include: keywords
+    - include: numbers
+    - include: strings
+    - include: functions
+    - include: function_call
+    - include: constants
+
+  constants:
+    - match: '\b(indices|length|tokens_str|tokens_int|tokens_bool|tokens_float|True|False)\b'
+      scope: constant.language.rasp
+
+  keywords:
+    # Keywords are if, else for and while.
+    # Note that blackslashes don't need to be escaped within single quoted
+    # strings in YAML. When using single quoted strings, only single quotes
+    # need to be escaped: this is done by using two single quotes next to each
+    # other.
+    - include: operators
+    - match: '\b(if|else|for|in|return)\b'
+      scope: keyword.control.rasp
+    - match: '^\s*(?:(async)\s+)?(def)\b'
+      scope: storage.type.function.rasp
+      push: function_name
+    - match: '\b(select|aggregate|selector_width)\b'
+      scope: support.function.builtin.base.rasp
+    - match: '\b(zip|range|len)\b'
+      scope: support.function.builtin.lists.rasp
+    - match: '\b(round|indicator)\b'
+      scope: support.function.builtin.elementwise.rasp
+    - match: '({{identifier}})\.(get)'
+      captures:
+        1 : meta.generic-name.rasp
+        2 : support.function.builtin.rasp
+
+  operators:
+    - match: '(-|\+|\*|/|\^|%)'
+      scope: keyword.operator.arithmetic.rasp
+    - match: '(=)'
+      scope: keyword.operator.assignment.rasp
+    - match: '(==|!=|>=|<=|>|<)'
+      scope: keyword.operator.comparison.rasp
+    - match: '\b(and|or|not)\b'
+      scope: keyword.operator.logical.rasp
+
+  function_call:
+    - match: '({{identifier}})(\()'
+      captures:
+        1 : variable.function.rasp
+        2 : punctuation.section.arguments.begin.rasp
+
+
+  function_name:
+    - match: '{{identifier}}'
+      scope: entity.name.function.rasp
+    - match: '\('
+      push: function_params
+    - match: '{'
+      pop: true
+
+  function_params:
+    - match: '({{identifier}})'
+      scope: variable.parameter.rasp
+    - match: ','
+    - match: '\)'
+      pop: true
+
+  numbers:
+    - match: '\b(-)?[0-9]+([.][0-9])?+\b'
+      scope: constant.numeric.rasp
+
+  strings:
+    # Strings begin and end with quotes, and use backslashes as an escape
+    # character.
+    - match: '"'
+      scope: punctuation.definition.string.begin.rasp
+      push: inside_string
+
+  inside_string:
+    - meta_include_prototype: false
+    - meta_scope: string.quoted.double.rasp
+    - match: '\.'
+      scope: constant.character.escape.rasp
+    - match: '"'
+      scope: punctuation.definition.string.end.rasp
+      pop: true
+
+  comments:
+    # Comments begin with a '//' and finish at the end of the line.
+    - match: '#'
+      scope: punctuation.definition.comment.rasp
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line.hashtag.rasp
+        - match: $\n?
+          pop: true
+

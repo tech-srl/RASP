@@ -1,0 +1,280 @@
+# will make big ole rover function, with this number of logical leaps, once done:
+depth=3;
+
+#### simplified version assumes reasonable simple inferences, i.e.: 
+# no "x<X->b<X" kind of nonsense: always exactly either both sets are X and elements are not,
+# or both elements are x and sets are not. there is a limit!
+
+###### constants: problem definition, basically ######
+elements = ["a","b","c"]; # can have more but printouts will be very big
+element_variable = "x";
+set_variable = "X";
+sets = ["A","B","C"];
+sep = ",";
+
+in_token = "<";
+infers_token = ":";
+notin_token = "#";
+
+# assumes inputs in form: a<A,x<A:x<B,a<B?, with one question, necessarily at end. num_clauses is not including question. 
+# helpful to run:
+example0 = "a<A,a<A?"; # T
+example1 = "a<A,a#A?"; # F
+example2 = "a<A,a<B?"; # ?
+example3 = "a<A,x<A:x<B,a<B?"; # T
+example4 = "a#A,x#A:x<B,a<B?"; # T
+example5 = "a<A,x<A:x#B,a<B?"; # F
+example6 = "a#A,x#A:x#B,a<A?"; # F
+example7 = "a#B,x<A:x<B,a<A?"; # F
+example8 = "b#B,x<A:x<B,a<B?"; # ?
+example9 = "x<A:x<B,x#B:x<C,b#B,b<A?"; # F
+example10 = "x<A:x<B,x#B:x<C,b#B,b<C?"; # T
+example11 = "a<A,x<A:x<B,x<B:x<C,a<C?"; # T # multistep one
+example12 = "a<A,x<A:x<B,x<B:x#C,a<C?"; # F # multistep one
+example13 = "a<A,x<A:x<B,x<C:x#B,a<C?"; # F # multistep one
+example14 = "a<A,b<A?"; # ?
+example15 = "a<A,a<X:b<X,b<A?"; # T
+example16 = "a<A,a<X:b#X,b<A?"; # F
+example17 = "a#A,a#X:b<X,b<A?"; # T
+example18 = "a#A,a#X:b#X,b<A?"; # F
+example19 = "a#A,b<X:a<X,b<A?"; # F
+example20 = "a<A,a<X:b<X,b<X:c<X,c<A?"; # T # multistep one
+example21 = "a<A,a<X:b<X,x<A:x<C,b<C?"; # T # mixed multistep one
+
+
+
+set example example2
+full seq display on 
+
+
+def checkfor(item,in_ness){
+	return item_in_base_clause and (other_base_item==item) and (base_op==in_ness);
+}
+
+
+
+def get_inference_clause_token(i) {
+	mark = relative_clause_pos==i and inference_clause;
+	return aggregate(select(mark,True,==) and 
+		   			 select(clause_index,clause_index,==),tokens,"");
+}
+
+def receiving_to_group(groupname){
+	return ((left_receiver==groupname) and inference_lefthalf) or
+			((right_receiver==groupname) and inference_righthalf);
+}
+
+def mutual_load(loader,bools_dict){
+	return {e:aggregate(loader,bools_dict[e],False) for e in bools_dict};
+}
+
+
+#### sharing information between same tokens
+def share_sightings(sightings){
+	def shared_sighting(s){ # not really necessary, but makes naming nicer in printouts
+		return aggregate(same_item,indicator(s))>0;
+	}
+
+	return {i:shared_sighting(sightings[i]) for i in sightings};
+}
+
+def receive(new,base,combine_condition) {
+	combined = {n:base[n] or new[n] for n in base};
+	return {n: combined[n] if combine_condition else base[n] 
+					for n in base};
+}
+
+def setchanger_update(contains,notcontains) {
+	# eg x<A:x<B
+	left_sender = {n:contains[n] if inference_leftop == in_token else notcontains[n] 
+					for n in contains};
+	right_sender = {n:notcontains[n] if inference_rightop == in_token else contains[n] 
+					for n in contains};
+	sender = {n:left_sender[n] if inference_lefthalf else right_sender[n] 
+					for n in left_sender};
+
+	# right receives from contains
+	incoming = mutual_load(mutual_inference_set_loader,sender);
+	contains = receive(incoming,contains,receive_to_contains);
+	notcontains = receive(incoming,notcontains,receive_to_notcontains);
+	return contains, notcontains;
+}
+
+def elementchanger_update(isin,notin) {
+	# eg a<X:b<X
+	left_sender = {n:isin[n] if inference_leftop == in_token else notin[n] 
+					for n in isin};
+	right_sender = {n:notin[n] if inference_rightop == in_token else isin[n] 
+					for n in isin};
+	sender = {n:left_sender[n] if inference_lefthalf else right_sender[n] 
+					for n in left_sender};
+
+	# right receives from contains
+	incoming = mutual_load(mutual_inference_element_loader,sender);
+	isin = receive(incoming,isin,receive_to_isin);
+	notin = receive(incoming,notin,receive_to_notin);
+	return isin, notin;
+}
+
+def type1_to_alltype2(t1,t2list,rel) {
+	res = False;
+	for e in t2list {
+		e_REL_item = aggregate(load_from_token[t1],indicator(rel[e]))>0;
+		res = res or (e_REL_item and (tokens==e));
+	}
+	return res;
+}
+
+def getall(sightings_dict){
+	res = "";
+	for i in sightings_dict {
+		res = res + (i if sightings_dict[i] else "");
+	}
+	return res;
+}
+
+########## setup: mark elements, relations, clauses, etc ##############
+clause_index = selector_width(select(tokens,",",==) and select(indices,indices,<));
+relative_clause_pos = selector_width(select(clause_index,clause_index,==) and select(indices,indices,<));
+num_clauses = clause_index[-1];
+is_sep = tokens==sep;
+
+inference_clause = selector_width(select(clause_index,clause_index,==) and 
+								  select(tokens,infers_token,==))>0 and not is_sep;
+question_clause = (clause_index == num_clauses) and not is_sep;
+base_clause = (not (question_clause or inference_clause)) and not is_sep;
+
+
+is_set = tokens in sets;
+is_element = tokens in elements;
+
+inference_lefthalf = relative_clause_pos<3 and inference_clause;
+inference_righthalf = relative_clause_pos>3 and inference_clause;
+
+load_from_token = {v:select(tokens,v,==) for v in elements+sets};
+
+######### first step: all base clauses load their values to their elements/sets ###########
+item_in_base_clause = (is_set or is_element) and base_clause;
+load_other_base_item = select(indices,indices,!=) and 
+					   select(clause_index,clause_index,==) and 
+					   select(item_in_base_clause,True,==) and 
+					   select(True,item_in_base_clause,==);
+other_base_item = aggregate(load_other_base_item,tokens,",");					  
+load_base_op = select(clause_index,clause_index,==) and
+		 	   select(item_in_base_clause,False,==) and
+		 	   select(base_clause,True,==);
+base_op = aggregate(load_base_op,tokens,",");		 	   
+
+
+contains = {e:checkfor(e,in_token) for e in elements};
+notcontains = {e:checkfor(e,notin_token) for e in elements};
+isin = {s:checkfor(s,in_token) for s in sets};
+notin = {s:checkfor(s,notin_token) for s in sets};
+
+
+inference_leftel = get_inference_clause_token(0);
+inference_leftop = get_inference_clause_token(1);
+inference_leftset = get_inference_clause_token(2);
+inference_rightel = get_inference_clause_token(4);
+inference_rightop = get_inference_clause_token(5);
+inference_rightset = get_inference_clause_token(6);
+
+setchanger = inference_leftel==element_variable and 
+				  inference_rightel==element_variable and 
+				  (not (inference_leftset==set_variable)) and 
+				  (not (inference_rightset==set_variable));
+elementchanger = 	  (not (inference_leftel==element_variable)) and 
+				  (not (inference_rightel==element_variable)) and 
+				  inference_leftset==set_variable and 
+				  inference_rightset==set_variable;
+is_inference_receiver = inference_clause and 
+						(relative_clause_pos in [0,2,4,6]) and 				  
+						not tokens in [set_variable,element_variable];
+
+setchanger_lr = "nc" if inference_leftop == in_token else "c";
+setchanger_rr = "c" if inference_rightop == in_token else "nc";
+elementchanger_lr = "ni" if inference_leftop == in_token else "i";
+elementchanger_rr = "i" if inference_rightop == in_token else "ni";
+left_receiver = elementchanger_lr if elementchanger else setchanger_lr;
+right_receiver = elementchanger_rr if elementchanger else setchanger_rr;
+
+receive_to_contains = receiving_to_group("c");
+receive_to_notcontains = receiving_to_group("nc");
+receive_to_isin = receiving_to_group("i");
+receive_to_notin = receiving_to_group("ni");
+
+
+mutual_inference_set_loader = select(clause_index,clause_index,==) and
+							select(inference_clause,True,==) and 
+							select(indices,indices,!=) and 
+							(select(relative_clause_pos,2,==) or 
+							 select(relative_clause_pos,6,==)) and
+							(select(2,relative_clause_pos,==) or
+							 select(6,relative_clause_pos,==));
+
+mutual_inference_element_loader = select(clause_index,clause_index,==) and
+							select(inference_clause,True,==) and 
+							select(indices,indices,!=) and 
+							(select(relative_clause_pos,0,==) or 
+							 select(relative_clause_pos,4,==)) and
+							(select(0,relative_clause_pos,==) or 
+							 select(4,relative_clause_pos,==));							
+
+same_item = select(tokens,tokens,==);
+
+stages = [];
+for _ in range(depth) {
+	######## second step: all element/set values share their information!! (except for query) #######
+	contains,notcontains,isin,notin = 
+		[share_sightings(c) for c in [contains,notcontains,isin,notin]];
+	stages = stages + [{"c":contains,"nc":notcontains,"i":isin,"ni":notin}];
+
+	######## third step: inference clauses shift values inside their sharepoints! ##########
+	new_contains,new_notcontains = setchanger_update(contains,notcontains);
+	new_isin,new_notin = elementchanger_update(isin,notin);
+
+	# make new values canon for correct clauses (e.g. dont make new_contains canon in an element-updating clause)
+	contains = {n:new_contains[n] if setchanger else contains[n] for n in contains};
+	notcontains = {n:new_notcontains[n] if setchanger else notcontains[n] for n in contains};
+	isin = {n:new_isin[n] if elementchanger else isin[n] for n in isin};
+	notin = {n:new_notin[n] if elementchanger else notin[n] for n in isin};
+
+
+	###### fourth step: sets share info with elements and vice versa             #######
+	###### (e.g. if x<A->x<B loaded a into B, then now a needs to know it's in B) #######
+	isin = {n:isin[n] or type1_to_alltype2(n,elements,contains) for n in isin};
+	notin = {n:notin[n] or type1_to_alltype2(n,elements,notcontains) for n in notin};
+	contains = {n:contains[n] or type1_to_alltype2(n,sets,isin) for n in contains};
+	notcontains = {n:notcontains[n] or type1_to_alltype2(n,sets,notin) for n in notcontains};
+}
+
+##### for poking around: make list of all contained, not contained, in, notin at each position ######
+all_known = 
+	{n:getall(c) for n,c in zip(["contains","notcontains","isin","notin"],[contains,notcontains,isin,notin])};
+
+
+##### final step: ask the question
+
+query_token = aggregate(select(relative_clause_pos==0 and question_clause,True,==),tokens,"-");
+query_op = aggregate(select(relative_clause_pos==1 and question_clause,True,==),tokens,"-");
+needstobe = {n:contains[n] if query_op==in_token else notcontains[n] for n in contains};
+needstonotbe = {n:contains[n] if query_op==notin_token else notcontains[n] for n in contains};
+
+posres = False;
+negres = False;
+for n in needstobe {
+	posres = posres or (needstobe[n] and query_token==n);
+	negres = negres or (needstonotbe[n] and query_token==n);
+}
+#### accumulates at every set token whether b satisfies the desired relation (query_op) with that set
+# now we just need to load it from the actual question position
+load_question_set = select(relative_clause_pos==2 and question_clause,True,==);
+posres = aggregate(load_question_set,posres,False);
+negres = aggregate(load_question_set,negres,False);
+
+res = "T" if posres else ("F" if negres else "?");
+
+
+
+
+

@@ -1,0 +1,8 @@
+windows setup:
+1. [Optional:] download graphviz from link at https://www.graphviz.org/download/ (e.g. stable_windows_10_cmake_Release_x64_graphviz-install-2.47.2-win64.exe), and run the installer.
+2. [Optional:] create a virtual environment and do all of the following in that environment
+3. [Optional, but necessary for drawing computation flows:] pip3 install graphviz 
+4. pip3 install antlr4-python3-runtime==4.9.1
+5. to run RASP: python3 RASP_support/REPL.py
+
+A better experience can be obtained by also installing a readline wrapper, similar to rlwrap for mac or linux.

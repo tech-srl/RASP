@@ -1,0 +1,96 @@
+def _with_bos_selector_width(s) {
+	s = s or select(indices,0,==);
+	return (1/aggregate(s,indicator(indices==0)))-1;
+}
+
+hist_bos = _with_bos_selector_width( select(tokens_str,tokens_str,==)); 
+
+hist_nobos = selector_width(select(tokens_str,tokens_str,==));
+
+_flip_s = select(indices,length-1-indices,==);
+reverse = aggregate(_flip_s,tokens_str);
+
+
+def _sort_bos(seq,key) {
+	should_be_earlier = select(key,key,<) or (select(key,key,==) and select(indices,indices,<));
+	num_before = _with_bos_selector_width(should_be_earlier);
+	num_before = -1 if indices==0 else num_before; # this is to set bos to 
+	# realise it is at position 0, else it confuses whatever position it ends up thinking it's in
+	main_seq_grab_output = select(num_before,indices-1,==); # indices-1 because they have to skip the bos-token
+	bos_grab_self = select(indices,0,==) and select(indices,indices,==);
+	grab_output = main_seq_grab_output or bos_grab_self;
+	return aggregate(grab_output,seq);
+}
+
+sort_bos = _sort_bos(tokens_str,tokens_str);
+
+def _has_earlier_with_bos() {
+	earlier_copy = select(tokens_str,tokens_str,==) and select(indices,indices,<);
+	num_prev_copies = _with_bos_selector_width(earlier_copy);
+	return num_prev_copies > 0;	
+}
+
+def _hist2_bos() {
+	has_prev_copy = _has_earlier_with_bos();
+	repr_with_own_count = select(hist_bos,hist_bos,==) and select(has_prev_copy,False,==);
+	return _with_bos_selector_width(repr_with_own_count);
+}
+
+hist2_bos = _hist2_bos();
+
+
+def _sort_by_freq_bos(non_token,max_len) {
+	has_earlier = _has_earlier_with_bos();
+	filtered_freq = hist_bos - (indicator(has_earlier)*max_len);
+	filtered_tokens = non_token if has_earlier else tokens_str;
+	return _sort_bos(filtered_tokens,-filtered_freq); 
+}
+
+sort_by_most_freq = _sort_by_freq_bos("§",300);
+
+
+def _dyck1_ptf() {
+	up_to_self = select(indices,indices,<=);
+	n_opens = (indices+1)*aggregate(up_to_self,indicator(tokens_str=="("));
+	n_closes = (indices+1)*aggregate(up_to_self,indicator(tokens_str==")"));
+	balance = n_opens - n_closes;
+	prev_imbalances = aggregate(up_to_self,indicator(balance<0));
+	return "F" if prev_imbalances>0 else 
+			("T" if balance==0 else "P");
+}
+
+dyck1_ptf = _dyck1_ptf();
+
+def dyckk_ptf(paren_pairs) {
+	# paren pairs should come as list of strings of length 2, e.g.: ["()","{}"]
+	openers = [p[0] for p in paren_pairs];
+	closers = [p[1] for p in paren_pairs];
+	opens = indicator(tokens_str in openers);
+	closes = indicator(tokens_str in closers);
+	up_to_self = select(indices,indices,<=);
+	n_opens = (indices+1)*aggregate(up_to_self,opens);
+	n_closes = (indices+1)*aggregate(up_to_self,closes);
+	depth = n_opens - n_closes;
+	delay_closer = depth + closes;
+	depth_index = selector_width(select(delay_closer,delay_closer,==) and up_to_self);
+	open_for_close = select(opens,True,==) and 
+					 select(delay_closer,delay_closer,==) and 
+					 select(depth_index,depth_index-1,==);
+	matched_opener = aggregate(open_for_close,tokens_str,"-");
+	opener_matches = matched_opener+tokens_str in paren_pairs;
+	mismatch = closes and not opener_matches;
+	had_problem = aggregate(up_to_self,indicator(mismatch or (depth<0)))>0;
+	return "F" if had_problem else ("T" if depth==0 else "P");
+}
+# your opener is the last opener in the sequence with depth one greater than yours (you reduce depth by closing).
+# (if more closers happen between you they will seek less-deep openers. if more openers happen
+# between you they will seek deeper closers, i.e. they will not have your depth. 
+# if both happen between you, then your depth-indices will not be subsequent.)
+# ideally, would not use depth_index. instead, would have:
+# potential_openers_for_closer = select(opens,True,==) and select(depth_delay_closer,depth_delay_closer,==) and up_to_self
+# closer_grab_opener = best(potential_openers_for_closer,score(indices,0,+)) # where best(s1,sc) takes a selector s1 and a scorer sc (which is created like a selector, only it makes numbers instead of booleans) and returns a new selector s2 such that in each row of s2, at most one position is chosen, and it is the chosen position in s1 with the maximum score according to sc
+# right now this function creates dyck2 with 4 layers and 2 heads, as follows: 1/2/1/1. but the second layer is just computing the depth_index which is then used in layer 3. so if we had 'best' and scorers, it would be 3 layers and 1 head.
+
+
+dyck2_ptf = dyckk_ptf(["()","{}"]);
+dyck3_ptf = dyckk_ptf(["()","{}","[]"]);
