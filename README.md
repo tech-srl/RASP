@@ -2,12 +2,13 @@
 
 ## Setup
 #### Mac or Linux
-- Run `./setup.sh` . It will create a python3 virtual environment and install the dependencies for RASP. It will also try to install graphviz (the non-python part) and rlwrap on your machine. If these fail, you will still be able to use RASP, however: the interface will not be as nice without `rlwrap`, and drawing s-op computation flows will not be possible without `graphviz`. 
-- After having set up, you can run `./rasp.sh` to start the RASP read-evaluate-print-loop. 
+Run `./setup.sh` . It will create a python3 virtual environment and install the dependencies for RASP. It will also try to install graphviz (the non-python part) and rlwrap on your machine. If these fail, you will still be able to use RASP, however: the interface will not be as nice without `rlwrap`, and drawing s-op computation flows will not be possible without `graphviz`. 
+After having set up, you can run `./rasp.sh` to start the RASP read-evaluate-print-loop. 
 #### Windows
 Follow the instructions given in `windows instructions.txt`
 
 ## The REPL
+After having set up, if you are in mac/linux, you can run `./rasp.sh` to start the RASP REPL. Otherwise, run `python3 RASP_support/REPL.py`
 Use Ctrl+C to quit a partially entered command, and Ctrl+D to exit the REPL.
 
 #### Initial Environment
@@ -17,9 +18,38 @@ Additionally, the REPL begins with a base example, `"hello"`, on which it shows 
 
 All RASP commands end with a semicolon. Commands to the REPL -- such as changing the base example -- do not.
 
-#### Examples
+Start by following along with the examples -- they are kept at the bottom of this readme.
 
-Play around! Try simple elementwise manipulations of s-ops:
+#### Note on input types:
+RASP expects inputs in four forms: strings, integers, floats, or booleans, handled respectively by `tokens_str`, `tokens_int`, `tokens_float`, and `tokens_bool`. Initially, RASP loads with `tokens` set to `tokens_str`, this can be changed by assignment, e.g.: `tokens=tokens_int;`. When changing the input type, you will also want to change the base example, e.g.: `set example [0,1,2]`. 
+
+Note that assignments do not retroactively change the computation trees of existing s-ops!
+
+
+## Writing and Loading RASP files
+
+To keep and load RASP code from files, save them with `.rasp` as the extension, and use the 'load' command without the extension. For example, you can load the examples file `paper_examples.rasp` in this repository to the REPL as follows:
+```
+>> load "paper_examples";
+```
+This will make (almost) all values in the file available in the loading environment (whether the REPL, or a different `.rasp` file): values whose names begin with an underscore remain private to the file they are written in.
+Loading files in the REPL will also print a list of all loaded values.
+
+#### Syntax Highlighting
+For the Sublime Text editor, you can get syntax highlighting for `.rasp` files as follows:
+1. Install package control for sublime (you might already have it: look in the menu [Sublime Text]->[Preferences] and see if it's there. If not, follow the instructions at https://packagecontrol.io/installation).
+2. Install the 'packagedev' package through package control ([Sublime Text]->[Preferences]->[Package Control], then type [install package], then [packagedev])
+3. After installing PackageDev, create a new syntax definition file through [Tools]->[Packages]->[Package Development]->[New Syntax Definition].
+4. Copy the contents of `RASP_support/RASP.sublime-syntax` into the new syntax definition file, and save it as `RASP.sublime-syntax`.
+
+[Above is basically following the instructions in http://ilkinulas.github.io/programming/2016/02/05/sublime-text-syntax-highlighting.html , and then copying in the contents of the provided `RASP.sublime-syntax` file]
+
+
+## Examples
+
+Play around in the REPL!  
+
+Try simple elementwise manipulations of s-ops:
 ```
 >> 3xindices =3 * indices;
    s-op: 3xindices
@@ -131,26 +161,7 @@ Then, use `selector_width` to compute, for each position, how many other positio
 
 For more complicated examples, check out `paper_examples.rasp`!
 
-#### Note on input types:
-RASP expects inputs in four forms: strings, integers, floats, or booleans, handled respectively by `tokens_str`, `tokens_int`, `tokens_float`, and `tokens_bool`. Initially, RASP loads with `tokens` set to `tokens_str`, this can be changed by assignment, e.g.: `tokens=tokens_int;`. When changing the input type, you will also want to change the base example, e.g.: `set example [0,1,2]`. 
 
-Note that assignments do not retroactively change the computation trees of existing s-ops!
+# Experiments on Transformers
+The transformers in the paper were trained, and their attention heatmaps visualised, using the code in this repository: https://github.com/tech-srl/RASP-exps
 
-
-## Writing and Loading RASP files
-
-To keep and load RASP code from files, save them with `.rasp` as the extension, and use the 'load' command without the extension. For example, you can load the examples file `paper_examples.rasp` in this repository to the REPL as follows:
-```
->> load "paper_examples";
-```
-This will make (almost) all values in the file available in the loading environment (whether the REPL, or a different `.rasp` file): values whose names begin with an underscore remain private to the file they are written in.
-Loading files in the REPL will also print a list of all loaded values.
-
-#### Syntax Highlighting
-For the Sublime Text editor, you can get syntax highlighting for `.rasp` files as follows:
-1. Install package control for sublime (you might already have it: look in the menu [Sublime Text]->[Preferences] and see if it's there. If not, follow the instructions at https://packagecontrol.io/installation).
-2. Install the 'packagedev' package through package control ([Sublime Text]->[Preferences]->[Package Control], then type [install package], then [packagedev])
-3. After installing PackageDev, create a new syntax definition file through [Tools]->[Packages]->[Package Development]->[New Syntax Definition].
-4. Copy the contents of `RASP_support/RASP.sublime-syntax` into the new syntax definition file, and save it as `RASP.sublime-syntax`.
-
-[Above is basically following the instructions in http://ilkinulas.github.io/programming/2016/02/05/sublime-text-syntax-highlighting.html , and then copying in the contents of the provided `RASP.sublime-syntax` file]
