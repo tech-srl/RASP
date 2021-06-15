@@ -452,11 +452,11 @@ class Evaluator:
 			raise RASPTypeError("zip needs at least one list")
 		for i,l in enumerate(lists):
 			if not isinstance(l,list):
-				raise RASPTypeError("attempting to zip lists, but",i,"-th element is not list:",strdesc(l))
+				raise RASPTypeError("attempting to zip lists, but",i+1,"-th element is not list:",strdesc(l))
 		n = len(lists[0])
 		for i,l in enumerate(lists):
 			if not len(l)==n:
-				raise RASPTypeError("attempting to zip lists of length",n,", but",i,"-th list has length",len(l))
+				raise RASPTypeError("attempting to zip lists of length",n,", but",i+1,"-th list has length",len(l))
 		return [list(v) for v in zip(*lists)] # keep everything lists, no tuples/lists mixing here, all the same to rasp (no stuff like append etc)
 
 	def make_dict_key(self,ast):
