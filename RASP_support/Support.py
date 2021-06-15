@@ -21,24 +21,19 @@ class SupportException(Exception):
 		Exception.__init__(self,m)
 
 TBAD = "bad"
-TBS = {bool:"bool",str:"str"}
-TNUM = "num"
+TNAME = {bool:"bool",str:"string",int:"int",float:"float"}
+NUMTYPES = [TNAME[int],TNAME[float]]
 
-def _lazy_type_check(vals):
-	def isnumber(v):
-		return isinstance(v,int) or isinstance(v,float)
-
-	for t in [str,bool]:
+def lazy_type_check(vals):
+	for t in [str,bool,int,float]:
 		b = [isinstance(v,t) for v in vals]
 		if False not in b:
-			return TBS[t]
-	if False not in [isnumber(v) for v in vals]:
-		return TNUM
+			return TNAME[t]
 	return TBAD
 
 class Sequence:
 	def __init__(self,vals):
-		self.type = _lazy_type_check(vals)
+		self.type = lazy_type_check(vals)
 		if self.type == TBAD:
 			raise RASPTypeError("attempted to create sequence with vals of different types:",vals)
 		self._vals = vals
@@ -46,8 +41,10 @@ class Sequence:
 	def __str__(self):
 		# return "Sequence"+str([small_str(v) for v in self._vals])
 		if (len(set(self._vals))==1) and (len(self._vals)>1):
-			return "["+small_str(self._vals[0])+"]*"+str(len(self._vals))
-		return "["+", ".join(small_str(v) for v in self._vals)+"]"
+			res = "["+small_str(self._vals[0])+"]*"+str(len(self._vals))
+		else:
+			res = "["+", ".join(small_str(v) for v in self._vals)+"]"
+		return res + " ("+self.type+"s)"
 
 	def __repr__(self):
 		return str(self)
@@ -172,7 +169,7 @@ def apply_average_select(select,k_vars,func,default=0):
 			if n == 1:
 				return vals[scores.index(True)]
 			# else # n>1
-			if not _lazy_type_check(vals)==TNUM:
+			if not (lazy_type_check(vals) in NUMTYPES):
 				raise Exception("asked to average multiple values, but they are non-numbers: "+str(vals))
 			return sum([v for s,v in zip(scores,vals) if s])*1.0/n 
 	

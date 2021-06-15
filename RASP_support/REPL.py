@@ -9,7 +9,7 @@ from Environment import Environment, UndefinedVariable, ReservedName
 from FunctionalSupport import UnfinishedSequence, UnfinishedSelect, Unfinished
 from Evaluator import Evaluator, NamedVal, NamedValList, JustVal, \
 				RASPFunction, ArgsError, RASPTypeError, RASPValueError
-from Support import Select, Sequence
+from Support import Select, Sequence, lazy_type_check
 
 encoder_name = "s-op"
 
@@ -177,7 +177,7 @@ class REPL:
 			return ResultToPrint(self.showExample(ast.showExample()), True)
 		if ast.toggleExample():
 			return ResultToPrint(self.toggleExample(ast.toggleExample()), False)
-		if ast.toggleSeqVerbose:
+		if ast.toggleSeqVerbose():
 			return ResultToPrint(self.toggleSeqVerbose(ast.toggleSeqVerbose()), False)
 		if ast.exit():
 			raise StopException()
@@ -449,11 +449,13 @@ class LineReader:
 				pythoninput+=" "
 
 
+
 def print_seq(example,seq,still_on_prev_line=False,extra_pref="",lastpref_if_shortprint=""):
 	if len(set(seq.get_vals()))==1:
 		print(extra_pref if not still_on_prev_line else "",
 				lastpref_if_shortprint,
-				str(seq)) # when there is only one value, it's nicer to just print that than the full list, verbosity be damned
+				str(seq),end=" ") 
+		print("[skipped full display: identical values]")# when there is only one value, it's nicer to just print that than the full list, verbosity be damned
 		return
 	if still_on_prev_line:
 		print("")
@@ -478,8 +480,8 @@ def print_seq(example,seq,still_on_prev_line=False,extra_pref="",lastpref_if_sho
 		def padded(s):
 			return " "*(maxlen-len(s))+s
 		return " ".join(padded(v) for v in seq)
-	print(extra_pref,"\t\tinput:  ",neatline(example))
-	print(extra_pref,"\t\toutput: ",neatline(seq))
+	print(extra_pref,"\t\tinput:  ",neatline(example),"\t","("+lazy_type_check(example)+"s)")
+	print(extra_pref,"\t\toutput: ",neatline(seq),"\t","("+lazy_type_check(seq)+"s)")
 
 def print_select(example,select,extra_pref=""):
 	# .replace("\n","\n\t\t\t")
