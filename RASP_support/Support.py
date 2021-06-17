@@ -29,6 +29,11 @@ def lazy_type_check(vals):
 		b = [isinstance(v,t) for v in vals]
 		if False not in b:
 			return TNAME[t]
+	# allow vals to also be mixed integers and ints, treat those as floats 
+	# (but don't actually change the ints to floats, want neat printouts)
+	b = [(isinstance(v,int) or isinstance(v,float)) for v in vals]
+	if False not in b:
+		return TNAME[float]
 	return TBAD
 
 class Sequence:
