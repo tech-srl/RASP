@@ -51,47 +51,52 @@ Play around in the REPL!
 
 Try simple elementwise manipulations of s-ops:
 ```
->> 3xindices =3 * indices;
-   s-op: 3xindices
-	 Example: 3xindices("hello") = [0, 3, 6, 9, 12]
+>>  threexindices =3 * indices;
+     s-op: threexindices
+ 	 Example: threexindices("hello") = [0, 3, 6, 9, 12] (ints)
 >> indices+indices;
-   s-op: out
-	 Example: out("hello") = [0, 2, 4, 6, 8]
+     s-op: out
+ 	 Example: out("hello") = [0, 2, 4, 6, 8] (ints)
 ```
-
 Change the base example, and create a selector that focuses each position on all positions before it:
 ```
 >> set example "hey"
 >> prevs=select(indices,indices,<);
-    selector: prevs
- 	 Example: prevs("hey") = 
-			{0: [0, 0, 0], 1: [1, 0, 0], 2: [1, 1, 0]}
+     selector: prevs
+ 	 Example:
+ 			     h e y
+ 			 h |      
+ 			 e | 1    
+ 			 y | 1 1  
 ```
 
 Check the output of an s-op on your new base example:
 ```
->> 3xindices;
-   s-op: 3xindices
-	 Example: 3xindices("hey") = [0, 3, 6]
+>> threexindices;
+     s-op: threexindices
+ 	 Example: threexindices("hey") = [0, 3, 6] (ints)
 ```
 
 Or on specific inputs:
 ```
->> 3xindices(["hi","there"]);
-	 =  [0, 3]
->> 3xindices("hiya");
-	= [0, 3, 6, 9]
+>> threexindices(["hi","there"]);
+	 =  [0, 3] (ints)
+>> threexindices("hiya");
+	 =  [0, 3, 6, 9] (ints)
 ```
 
-Aggregate with the full selection pattern to compute the proportion of a letter in your input:
+Aggregate with the full selection pattern (loaded automatically with the REPL) to compute the proportion of a letter in your input:
 ```
 >> full_s;
-    selector: full_s
-    Example: full_s("hey") = 
-      {0: [1, 1, 1], 1: [1, 1, 1], 2: [1, 1, 1]}
+     selector: full_s
+ 	 Example:
+ 			     h e y
+ 			 h | 1 1 1
+ 			 e | 1 1 1
+ 			 y | 1 1 1
 >> my_frac=aggregate(full_s,indicator(tokens=="e"));
-    s-op: my_frac
- 		Example: my_frac("hey") = [0.333]*3
+     s-op: my_frac
+ 	 Example: my_frac("hey") = [0.333]*3 (floats)
 ```
 Note: when an s-op's output is identical in all positions, RASP simply prints the output of one position, followed by  "` * X`" (where X is the sequence length) to mark the repetition.
 
@@ -99,43 +104,43 @@ Note: when an s-op's output is identical in all positions, RASP simply prints th
 Check if a letter is in your input at all:
 ```
 >> "e" in tokens;
-    s-op: out
-   Example: out("hey") = [T]*3
+     s-op: out
+ 	 Example: out("hey") = [T]*3 (bools)
 ```
 
 Alternately, in an elementwise fashion, check if each of your input tokens belongs to some group:
 ```
 >> vowels = ["a","e","i","o","u"];
-    list: vowels = ['a', 'e', 'i', 'o', 'u']
+     list: vowels = ['a', 'e', 'i', 'o', 'u']
 >> tokens in vowels;
-    s-op: out
-   Example: out("hey") = [F, T, F]
+     s-op: out
+ 	 Example: out("hey") = [F, T, F] (bools)
 ```
 
 Draw the computation flow for an s-op you have created, on an input of your choice:
 (this will create a pdf in a subfolder `comp_flows` of the current directory)
 ```
 >> draw(my_frac,"abcdeeee");
-   =  [0.5]*8
+	 =  [0.5]*8 (floats)
 ```
 
 Or simply on the base example:
 ```
 >> draw(my_frac);
-	=  [0.333]*3	 
+	 =  [0.333]*3 (floats)
 ```
 
 If they bother you, turn the examples off, and bring them back when you need them:
 ```
 >> examples off
 >> indices;
-    s-op: indices
+     s-op: indices
 >> full_s;
-    selector: full_s
+     selector: full_s
 >> examples on
 >> indices;
-    s-op: indices
- 	 Example: indices("hello") = [0, 1, 2, 3, 4]
+     s-op: indices
+ 	 Example: indices("hey") = [0, 1, 2] (ints)
 ```
 You can also do this selectively, turning only selector or s-op examples on and off, e.g.: `selector examples off`.
 
@@ -143,20 +148,21 @@ Create a selector that focuses each position on all other positions containing t
 ```
 >> set example "hello"
 >> same_token=select(tokens,tokens,==);
-    selector: same_token
-   Example: same_token("hello") = 
-      {0: [1, 0, 0, 0, 0],
-       1: [0, 1, 0, 0, 0],
-       2: [0, 0, 1, 1, 0],
-       3: [0, 0, 1, 1, 0],
-       4: [0, 0, 0, 0, 1]}
+     selector: same_token
+ 	 Example:
+ 			     h e l l o
+ 			 h | 1        
+ 			 e |   1      
+ 			 l |     1 1  
+ 			 l |     1 1  
+ 			 o |         1
 ```
 
 Then, use `selector_width` to compute, for each position, how many other positions the selector `same_token` focuses it on. This effectively computes an in-place histogram over the input:
 ```
 >> histogram=selector_width(same_token);
-    s-op: histogram
-   Example: histogram("hello") = [1, 1, 2, 2, 1]
+     s-op: histogram
+ 	 Example: histogram("hello") = [1, 1, 2, 2, 1] (ints)
 ```
 
 For more complicated examples, check out `paper_examples.rasp`!
