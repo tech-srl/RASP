@@ -470,6 +470,7 @@ def print_seq(example,seq,still_on_prev_line=False,extra_pref="",lastpref_if_sho
 			return seq
 
 	example = cleanboolslist(example)
+	seqtype = lazy_type_check(seq)
 	seq = cleanboolslist(seq)
 	example = [str(v) for v in example]
 	seq = [str(v) for v in seq]
@@ -481,7 +482,7 @@ def print_seq(example,seq,still_on_prev_line=False,extra_pref="",lastpref_if_sho
 			return " "*(maxlen-len(s))+s
 		return " ".join(padded(v) for v in seq)
 	print(extra_pref,"\t\tinput:  ",neatline(example),"\t","("+lazy_type_check(example)+"s)")
-	print(extra_pref,"\t\toutput: ",neatline(seq),"\t","("+lazy_type_check(seq)+"s)")
+	print(extra_pref,"\t\toutput: ",neatline(seq),"\t","("+seqtype+"s)")
 
 def print_select(example,select,extra_pref=""):
 	# .replace("\n","\n\t\t\t")
