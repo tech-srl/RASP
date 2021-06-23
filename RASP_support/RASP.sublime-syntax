@@ -38,7 +38,7 @@ contexts:
     - include: constants
 
   constants:
-    - match: '\b(indices|length|tokens_str|tokens_int|tokens_bool|tokens_float|True|False)\b'
+    - match: '\b(indices|length|tokens|tokens_str|tokens_int|tokens_bool|tokens_float|True|False)\b'
       scope: constant.language.rasp
 
   keywords:
