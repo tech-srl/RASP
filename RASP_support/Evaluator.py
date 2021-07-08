@@ -141,7 +141,9 @@ class Evaluator:
 		if not isinstance(example,str):
 			raise RASPTypeError("draw expects to evaluate sequence on string, got:",example)
 		unf.draw_comp_flow(example)
-		return JustVal(unf(example))
+		res = unf(example)
+		res.created_from_input = example
+		return JustVal(res)
 
 	def assign(self,ast):
 		def set_val_and_name(val,name):
