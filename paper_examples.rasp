@@ -1,6 +1,6 @@
 def _with_bos_selector_width(s) {
 	s = s or select(indices,0,==);
-	return (1/aggregate(s,indicator(indices==0)))-1;
+	return round((1/aggregate(s,indicator(indices==0))))-1;
 }
 
 hist_bos = _with_bos_selector_width( select(tokens_str,tokens_str,==)); 
