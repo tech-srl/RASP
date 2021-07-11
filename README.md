@@ -171,3 +171,21 @@ For more complicated examples, check out `paper_examples.rasp`!
 # Experiments on Transformers
 The transformers in the paper were trained, and their attention heatmaps visualised, using the code in this repository: https://github.com/tech-srl/RASP-exps
 
+# Citation
+This repo is an implementation of RASP as presented in the paper "Thinking Like Transformers" (https://arxiv.org/abs/2106.06981). You can cite it using:
+```
+@InProceedings{pmlr-v139-weiss21a,
+  title = 	 {Thinking Like Transformers},
+  author =       {Weiss, Gail and Goldberg, Yoav and Yahav, Eran},
+  booktitle = 	 {Proceedings of the 38th International Conference on Machine Learning},
+  pages = 	 {11080--11090},
+  year = 	 {2021},
+  editor = 	 {Meila, Marina and Zhang, Tong},
+  volume = 	 {139},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {18--24 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v139/weiss21a/weiss21a.pdf},
+  url = 	 {http://proceedings.mlr.press/v139/weiss21a.html}
+  }
+```
