@@ -13,19 +13,9 @@ from Support import Select, Sequence, lazy_type_check
 
 encoder_name = "s-op"
 
-class ResultToPrint:
-	def __init__(self,res,to_print):
-		self.res, self.print = res, to_print
-
 class LazyPrint:
 	def __init__(self,*a,**kw):
 		self.a, self.kw = a, kw
-	def print(self):
-		print(*self.a,**self.kw)
-
-class StopException(Exception):
-	def __init__(self):
-		super().__init__()
 
 debug = False
 
@@ -59,19 +49,19 @@ class REPL:
 		self.sequence_prints_verbose = False
 		self.show_sequence_examples = True
 		self.show_selector_examples = True
-		self.results_to_print = []
+		self.printing = True
 		self.print_welcome()
 		self.load_base_libraries_and_make_base_env()
 
 	def load_base_libraries_and_make_base_env(self):
-		self.silent = True
 		self.base_env = self.env.snapshot() # base env: the env from which every load begins
 		# bootstrap base_env with current (basically empty except indices etc) env, then load
 		# the base libraries to build the actual base env
-		for l in ["RASP_support/rasplib"]:			
-			self.run_given_line("load \""+l+"\";")
+		for l in ["RASP_support/rasplib"]:
+			tmp, self.printing = self.printing, False
+			self.run_tree(None,"load \""+l+"\";",self.env)
 			self.base_env = self.env.snapshot()
-		self.silent = False
+			self.printing = tmp
 
 
 	def set_running_example(self,example,which="both"):
@@ -88,7 +78,7 @@ class REPL:
 		val = justval.val
 		if None is val:
 			return
-		if isinstance(val,Select):
+		elif isinstance(val,Select):
 			print("\t = ")
 			print_select(val.created_from_input,val)
 		elif isinstance(val,Sequence) and self.sequence_prints_verbose:
@@ -120,9 +110,9 @@ class REPL:
 		elif isinstance(val,RASPFunction):
 			print(pref,extra_first_pref,"   "+str(val))
 		elif isinstance(val,list):
-			named = "   list: "+((name+" = ") if not None is name else "")
+			named = "   list: "+((name+" = ") if None is not name else "")
 			print(pref,extra_first_pref,named,end="")
-			flat = True not in [isinstance(v,list) or isinstance(v,dict) or isinstance(v,Unfinished) for v in val]
+			flat = not any(isinstance(v,list) or isinstance(v,dict) or isinstance(v,Unfinished) for v in val)
 			if flat:
 				print(val)
 			else:
@@ -131,9 +121,9 @@ class REPL:
 					self.print_named_val(None,v,ntabs=ntabs+2)
 				print(pref," "*len(named),"]")
 		elif isinstance(val,dict):
-			named = "   dict: "+((name+" = ") if not None is name else "")
+			named = "   dict: "+((name+" = ") if None is not name else "")
 			print(pref,extra_first_pref,named,end="")
-			flat = True not in [isinstance(val[v],list) or isinstance(val[v],dict) or isinstance(val[v],Unfinished) for v in val]
+			flat = not any(isinstance(val[v],list) or isinstance(val[v],dict) or isinstance(val[v],Unfinished) for v in val)
 			if flat:
 				print(val)
 			else:
@@ -143,7 +133,7 @@ class REPL:
 				print(pref," "*len(named),"}")
 
 		else:
-			print(pref,"   value:",((name+" = ") if not None is name else ""),formatstr(val))
+			print(pref,"   value:",((name+" = ") if None is not name else ""),formatstr(val))
 
 	def print_example(self,nres):
 		if nres.subset in ["both",encoder_name]:
@@ -152,35 +142,34 @@ class REPL:
 			print("\tselector example:",formatstr(self.selector_running_example))
 
 	def print_result(self,rp):
-		if self.silent:
+		if rp is None:
 			return
-		if isinstance(rp,LazyPrint):
-			return rp.print()
-		if isinstance(rp,list): # a list of multiple ResultToPrint s -- probably the result of a multi-assignment
-			for v in rp:
-				self.print_result(v) 
-			return
-		if not rp.print:
-			return
-		res = rp.res
-		if isinstance(res,NamedVal):
-			self.print_named_val(res.name,res.val)
-		elif isinstance(res,ReturnExample):
-			self.print_example(res)
-		elif isinstance(res,JustVal):
-			self.print_just_val(res)
+		elif isinstance(rp,LazyPrint):
+			print(*rp.a, **rp.kw)
+		elif isinstance(rp,NamedVal):
+			self.print_named_val(rp.name,rp.val)
+		elif isinstance(rp,ReturnExample):
+			self.print_example(rp)
+		elif isinstance(rp,JustVal):
+			self.print_just_val(rp)
+		else:
+			if debug: raise TypeError("something went wrong, wrong type in result_to_print -- ", rp)
+			print("something went wrong, wrong type in result_to_print -- ", rp)
 
 	def evaluate_replstatement(self,ast):
 		if ast.setExample():
-			return ResultToPrint(self.setExample(ast.setExample()), False)
-		if ast.showExample():
-			return ResultToPrint(self.showExample(ast.showExample()), True)
-		if ast.toggleExample():
-			return ResultToPrint(self.toggleExample(ast.toggleExample()), False)
-		if ast.toggleSeqVerbose():
-			return ResultToPrint(self.toggleSeqVerbose(ast.toggleSeqVerbose()), False)
-		if ast.exit():
-			raise StopException()
+			return self.setExample(ast.setExample())
+		elif ast.showExample():
+			return self.showExample(ast.showExample())
+		elif ast.toggleExample():
+			return self.toggleExample(ast.toggleExample())
+		elif ast.toggleSeqVerbose():
+			return self.toggleSeqVerbose(ast.toggleSeqVerbose())
+		elif ast.exit():
+			raise EOFError
+		else:
+			if debug: raise NotImplemented
+			print("something went wrong, wrong type in result_to_print -- ", rp, res)
 
 	def toggleSeqVerbose(self,ast):
 		switch = ast.switch.text
@@ -208,144 +197,109 @@ class REPL:
 		subset = ast.subset
 		subset = "both" if not subset else subset.text
 		self.set_running_example(example,subset)
-		return ReturnExample(subset)
+		#return ReturnExample(subset)
+		return None # dont print anything
 
-	def loadFile(self,ast,calling_env=None):
-		if None is calling_env:
-			calling_env = self.env
+	def loadFile(self,ast,calling_env):
+#		if None is calling_env:
+#			calling_env = self.env
 		libname = ast.filename.text[1:-1]
 		filename = libname + ".rasp"
 		try:
 			with open(filename,"r") as f:
 				prev_example_settings = self.show_sequence_examples, self.show_selector_examples
 				self.show_sequence_examples, self.show_selector_examples = False, False
-				self.run(fromfile=f,env = Environment(name=libname,parent_env=self.base_env,stealing_env=calling_env),store_prints=True)
-				self.filter_and_dump_prints() 
+				self.run(fromfile=f,env=Environment(name=libname,parent_env=self.base_env,stealing_env=calling_env))
 				self.show_sequence_examples, self.show_selector_examples = prev_example_settings
 		except FileNotFoundError:
 			raise LoadError("could not find file: "+filename)
 
-	def get_tree(self,fromfile=None):
+	def run_tree(self,fromfile,fromline,env):
 		try:
-			return LineReader(fromfile=fromfile).get_input_tree()
+			tree = LineReader(fromfile=fromfile,fromline=fromline).get_input_tree()
+			if isinstance(tree,Stop):
+				return False # stop running
+			rps = self.evaluate_tree(tree,env)
+			if self.printing:
+				self.careful_print(rps)
 		except AntlrException as e:
 			print("\t!! antlr exception:",e.msg,"\t-- ignoring input")
-		return None
-
-	def run_given_line(self,line):
-		try:
-			tree = LineReader(given_line=line).get_input_tree()
-			if isinstance(tree,Stop):
-				return None
-			rp = self.evaluate_tree(tree)
-			if isinstance(rp,LazyPrint):
-				rp.print() # error messages get raised, but ultimately have to be printed somewhere if not caught? idk
-		except AntlrException as e:
-			print("\t!! REPL failed to run initiating line:",line)
-			print("\t    --got antlr exception:",e.msg)
-		return None
+		except RASPTypeError as e:
+			print("\t!!statement executed, but result fails on evaluation:\n\t\t",e)
+		except EOFError:
+			print() # newline
+			return False # stop running
+		except KeyboardInterrupt:
+			print() # newline
+		except Exception as e:
+			if debug:
+				raise e
+			print("something went wrong:",e)
+		return True # continue running
 
 	def assigned_to_top(self,res,env):
-		if env is self.env:
-			return True
-		# we are now definitely inside some file, the question is whether we have taken
-		# the result and kept it in the top level too, i.e., whether we have imported a non-private value.
-		# checking whether it is also in self.env, even identical, will not tell us much as it may have been here and the same
-		# already. so we have to replicate the logic here.
+		# only namedvals get set to begin with
+		# self.env is toplevel
+		# _* and out are private -> not toplevel
 		if not isinstance(res,NamedVal):
-			return False # only namedvals get set to begin with
-		if res.name.startswith("_") or (res.name=="out"):
+			return True
+		elif env is self.env:
+			return True
+		elif res.name.startswith("_"):
 			return False
-		return True
+		elif res.name == "out":
+			return False
+		else:
+			return True
 
-	def evaluate_tree(self,tree,env=None):
-		if None is env: 
-			env = self.env # otherwise, can pass custom env 
-			# (e.g. when loading from a file, make env for that file, 
-			# to keep that file's private (i.e. underscore-prefixed) variables to itself)
-		if None is tree:
-			return ResultToPrint(None,False)
+	def evaluate_tree(self,tree,env):
+		# (e.g. when loading from a file, make env for that file,
+		# to keep that file's private (i.e. underscore-prefixed) variables to itself)
 		try:
-			if tree.replstatement():
-				return self.evaluate_replstatement(tree.replstatement())
+			if None is tree:
+				return []
+			elif tree.replstatement():
+				return [self.evaluate_replstatement(tree.replstatement())]
 			elif tree.raspstatement(): 
+				# TODO make Evaluator return list of named vals instead of namedvallist?
 				res = Evaluator(env,self).evaluate(tree.raspstatement())
-				if isinstance(res,NamedValList):
-					return [ResultToPrint(r,self.assigned_to_top(r,env)) for r in res.nvs]
-				return ResultToPrint(res, self.assigned_to_top(res,env)) 
+				res = res.nvs if isinstance(res,NamedValList) else [res]
+				return [r for r in res if self.assigned_to_top(r,env)]
+			else: # if not replstatement or raspstatement, then comment
+				return []
 		except (UndefinedVariable, ReservedName) as e:
-			return LazyPrint("\t\t!!ignoring input:\n\t",e)
+			print("\t\t!!ignoring input:\n\t",e)
 		except NotImplementedError:
-			return LazyPrint("not implemented this command yet! ignoring")
+			print("not implemented this command yet! ignoring")
 		except (ArgsError,RASPTypeError,LoadError,RASPValueError) as e:
-			return LazyPrint("\t\t!!ignoring input:\n\t",e)
-		# if not replstatement or raspstatement, then comment
-		return ResultToPrint(None,False)
+			print("\t\t!!ignoring input:\n\t",e)
+		return []
 
-	def filter_and_dump_prints(self):
+	def careful_print(self, rps):
 		# TODO: some error messages are still rising up and getting printed before reaching this position :(
-		def filter_named_val_reps(rps):
-			# do the filtering. no namedvallists here - those are converted into a list of ResultToPrint s 
-			# containing NamedVal s immediately after receiving them in evaluate_tree
-			res = []
-			names = set()
-			for r in rps[::-1]: # go backwards - want to print the last occurence of each named item, not first, so filter works backwards
-				if isinstance(r.res,NamedVal):
-					if r.res.name in names:
-						continue
-					names.add(r.res.name)
-				res.append(r)
-			return res[::-1] # flip back forwards
 
-		if not True in [isinstance(v,LazyPrint) for v in self.results_to_print]:
-			self.results_to_print = filter_named_val_reps(self.results_to_print)
-		# if isinstance(res,NamedVal):
-		# self.print_named_val(res.name,res.val)
-		#
-		# print all that needs to be printed:
-		for r in self.results_to_print:
-			if isinstance(r,LazyPrint):
-				r.print()
-			else:
-				self.print_result(r)
-		# clear the list
-		self.results_to_print = []
+		# rps is a list of NamedVals and LazyPrints
+		# go backwards - print last occurence of name per NamedVal, elminate other duplicate occurences
+		names = set()
+		for i,r in reversed(list(enumerate(rps))):
+			if isinstance(r,NamedVal):
+				if r.name in names:
+					r[i] = None
+				names.add(r.name)
+
+		# print list
+		for r in rps:
+			self.print_result(r)
 
 
 
 
-	def run(self,fromfile=None,env=None,store_prints=False):
-		def careful_print(*a,**kw):
-			if store_prints:
-				self.results_to_print.append(LazyPrint(*a,**kw))
-			else:
-				print(*a,**kw)
-		while True:
-			try:
-				tree = self.get_tree(fromfile)
-				if isinstance(tree,Stop):
-					break
-				rp = self.evaluate_tree(tree,env)
-				if store_prints:
-					if isinstance(rp,list):
-						self.results_to_print += rp # multiple results given - a multi-assignment
-					else:
-						self.results_to_print.append(rp)
-				else:
-					self.print_result(rp)
-			except RASPTypeError as e:
-				careful_print("\t!!statement executed, but result fails on evaluation:\n\t\t",e)
-			except EOFError:
-				careful_print("")
-				break
-			except StopException:
-				break
-			except KeyboardInterrupt:
-				careful_print("")	# makes newline	
-			except Exception as e:
-				if debug:
-					raise e
-				careful_print("something went wrong:",e)
+
+	def run(self,fromfile=None,env=None):
+		env = self.env if env is None else env
+		running = True
+		while running:
+			running = self.run_tree(fromfile,None,env)
 
 
 
@@ -386,27 +340,27 @@ class MyErrorListener( ErrorListener ):
 
 	# def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
 		# we're ok with this: happens with func defs it seems
-		
+
 class Stop:
 	def __init__(self):
 		pass
 
 class LineReader:
-	def __init__(self,prompt=">>",fromfile=None,given_line=None):
+	def __init__(self,prompt=">>",fromfile=None,fromline=None):
 		self.fromfile = fromfile
-		self.given_line = given_line
+		self.fromline = fromline
 		self.prompt = prompt + " "
 		self.cont_prompt = "."*len(prompt)+" "
 
 	def str_to_antlr_parser(self,s):
 		antlrinput = InputStream(s)
-		lexer = RASPLexer(antlrinput)    
+		lexer = RASPLexer(antlrinput)
 		lexer.removeErrorListeners()
-		lexer.addErrorListener( MyErrorListener() )    
-		stream = CommonTokenStream(lexer)        
-		parser = RASPParser(stream) 
-		parser.removeErrorListeners()     
-		parser.addErrorListener( MyErrorListener() ) 
+		lexer.addErrorListener( MyErrorListener() )
+		stream = CommonTokenStream(lexer)
+		parser = RASPParser(stream)
+		parser.removeErrorListeners()
+		parser.addErrorListener( MyErrorListener() )
 		return parser
 
 
@@ -414,16 +368,14 @@ class LineReader:
 		prompt = self.cont_prompt if continuing else self.prompt
 		if not None is self.fromfile:
 			res = self.fromfile.readline()
-			if not res: # python files return "" on last line (as opposed to "\n" on empty lines)
-				return Stop()
-			return res
-		if not None is self.given_line:
-			res = self.given_line
-			self.given_line = Stop()
+			return Stop() if not res else res # python files return "" on last line (as opposed to "\n" on empty lines)
+		if not None is self.fromline:
+			res = self.fromline
+			self.fromline = Stop()
 			return res
 		else:
 			return input(prompt+("  "*nest_depth))
-			
+
 
 	def get_input_tree(self):
 		pythoninput=""
@@ -494,13 +446,14 @@ def print_select(example,select,extra_pref=""):
 
 
 if __name__ == "__main__":
-	REPL().run()
+	myrepl = REPL().run()
 
+# to run RASP from python
 def runner():
-	a = REPL()
+	myrepl = REPL()
 	try:
-		a.run()
+		myrepl.run()
 	except Exception as e:
 		print(e)
-		return a,e
-	return a,None
+		return myrepl,e
+	return myrepl,None
