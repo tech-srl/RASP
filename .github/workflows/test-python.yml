@@ -25,6 +25,7 @@ jobs:
           python3 .github/workflows/tests/runall.py
       - name: make sure output is equivalent to target for individual files
         run: |
+          cat .github/workflows/tests/out/smol.txt
           diff .github/workflows/tests/out/smol.txt                       .github/workflows/tests/tgt/smol.txt 
           diff .github/workflows/tests/out/simple_sequences_no_errors.txt .github/workflows/tests/tgt/simple_sequences_no_errors.txt 
           diff .github/workflows/tests/out/some_errors.txt                .github/workflows/tests/tgt/some_errors.txt 
