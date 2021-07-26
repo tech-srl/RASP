@@ -1,0 +1,6 @@
+a,b=3,5;
+c=indices+4;
+for i in range(4) {
+	c = c+i;
+}
+

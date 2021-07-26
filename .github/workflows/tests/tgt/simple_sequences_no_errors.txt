@@ -1,0 +1,51 @@
+RASP 0.0
+running example is: hello
+>>      s-op: indices
+ 	 Example: indices("hello") = [0, 1, 2, 3, 4] (ints)
+>>      s-op: length
+ 	 Example: length("hello") = [5]*5 (ints)
+>>      s-op: tokens
+ 	 Example: tokens("hello") = [h, e, l, l, o] (strings)
+>>      s-op: out
+ 	 Example: out("hello") = [1, 2, 3, 4, 5] (ints)
+>>      s-op: out
+ 	 Example: out("hello") = [0, 3, 6, 9, 12] (ints)
+>> >>      s-op: tokens
+ 	 Example: tokens([4, 7, 10]) = [4, 7, 10] (ints)
+>>      s-op: out
+ 	 Example: out([4, 7, 10]) = [0, 7, 20] (ints)
+>>      s-op: out
+ 	 Example: out([4, 7, 10]) = [4]*3 (ints)
+>> >>      s-op: out
+===============================================================
+===============================================================
+evaluation failed in: [ tokens ] with exception:
+ invalid literal for int() with base 10: 'h'
+===============================================================
+parent values are:
+=============
+input
+hello there
+===============================================================
+===============================================================
+  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/FunctionalSupport.py", line 216, in <lambda>
+    tokens_int = UnfinishedSequence((_input,),lambda w:Sequence(list(map(int,w))),name=plain_tokens+"_int")
+
+ 	 Example: out("hello there") = EVALUATION FAILURE
+>>      s-op: out
+===============================================================
+===============================================================
+evaluation failed in: [ tokens ] with exception:
+ invalid literal for int() with base 10: 'h'
+===============================================================
+parent values are:
+=============
+input
+hello there
+===============================================================
+===============================================================
+  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/FunctionalSupport.py", line 216, in <lambda>
+    tokens_int = UnfinishedSequence((_input,),lambda w:Sequence(list(map(int,w))),name=plain_tokens+"_int")
+
+ 	 Example: out("hello there") = EVALUATION FAILURE
+>> .. 

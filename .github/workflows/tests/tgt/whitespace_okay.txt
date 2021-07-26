@@ -1,0 +1,15 @@
+RASP 0.0
+running example is: hello
+>> .. ..      s-op: out
+ 	 Example: out("hello") = [4, 5, 6, 7, 8] (ints)
+>> .. .. .. ..      s-op: out
+ 	 Example: out("hello") = [T]*5 (bools)
+>> .. .. .. .. ..      selector: out
+ 	 Example:
+ 			     h e l l o
+ 			 h |          
+ 			 e | 1        
+ 			 l | 1 1      
+ 			 l | 1 1 1    
+ 			 o | 1 1 1 1  
+>> 

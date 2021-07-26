@@ -1,0 +1,14 @@
+indices+
+
+4;
+
+
+
+tokens==tokens
+;
+
+select(
+
+indices,
+
+		indices,<);
