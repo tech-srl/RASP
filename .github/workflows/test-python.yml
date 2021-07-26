@@ -25,11 +25,12 @@ jobs:
           python3 .github/workflows/tests/runall.py
       - name: make sure output is equivalent to target for individual files
         run: |
+          diff .github/workflows/tests/out/smol.txt                       .github/workflows/tests/tgt/smol.txt 
           diff .github/workflows/tests/out/simple_sequences_no_errors.txt .github/workflows/tests/tgt/simple_sequences_no_errors.txt 
-          diff .github/workflows/tests/out/some_errors.txt .github/workflows/tests/tgt/some_errors.txt 
-          diff .github/workflows/tests/out/whitespace_okay.txt .github/workflows/tests/tgt/whitespace_okay.txt 
-          diff .github/workflows/tests/out/paper_examples.txt .github/workflows/tests/tgt/paper_examples.txt 
-          diff .github/workflows/tests/out/simple_assignments.txt .github/workflows/tests/tgt/simple_assignments.txt 
+          diff .github/workflows/tests/out/some_errors.txt                .github/workflows/tests/tgt/some_errors.txt 
+          diff .github/workflows/tests/out/whitespace_okay.txt            .github/workflows/tests/tgt/whitespace_okay.txt 
+          diff .github/workflows/tests/out/paper_examples.txt             .github/workflows/tests/tgt/paper_examples.txt 
+          diff .github/workflows/tests/out/simple_assignments.txt         .github/workflows/tests/tgt/simple_assignments.txt 
       - name: in case i ever forget to add a test to the yaml... make sure entirety of found files are equivalent when concatenated
         run: |
           diff concatenated_outs.txt concatenated_tgts.txt 
