@@ -3,14 +3,15 @@ import os
 def things_in_path(path):
 	if not os.path.exists(path):
 		return []
-	return os.listdir(path)
+	return [p for p in os.listdir(path) if not p==".DS_Store"]
 
 testpath = ".github/workflows/tests"
 inpath = testpath+"/in"
 outpath = testpath+"/out"
 tgtpath = testpath+"/tgt"
 
-os.makedirs(outpath)
+if not os.path.exists(outpath):
+	os.makedirs(outpath)
 
 all_names = things_in_path(inpath)
 

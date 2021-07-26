@@ -4,3 +4,9 @@ for i in range(4) {
 	c = c+i;
 }
 
+def foo(a,b) {
+	return a+b,5;
+}
+
+
+e,f=foo(6,7);

@@ -8,6 +8,7 @@ tokens=tokens_int;
 tokens*indices;
 tokens[0];
 set example "hello there"
+tokens = tokens_str;
 selector_width(select(tokens,tokens,==));
 "a" if indices%2==1 else tokens;
 

@@ -16,36 +16,10 @@ running example is: hello
  	 Example: out([4, 7, 10]) = [0, 7, 20] (ints)
 >>      s-op: out
  	 Example: out([4, 7, 10]) = [4]*3 (ints)
->> >>      s-op: out
-===============================================================
-===============================================================
-evaluation failed in: [ tokens ] with exception:
- invalid literal for int() with base 10: 'h'
-===============================================================
-parent values are:
-=============
-input
-hello there
-===============================================================
-===============================================================
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/FunctionalSupport.py", line 216, in <lambda>
-    tokens_int = UnfinishedSequence((_input,),lambda w:Sequence(list(map(int,w))),name=plain_tokens+"_int")
-
- 	 Example: out("hello there") = EVALUATION FAILURE
+>> >>      s-op: tokens
+ 	 Example: tokens("hello there") = [h, e, l, l, o,  , t, h, e, r, e] (strings)
 >>      s-op: out
-===============================================================
-===============================================================
-evaluation failed in: [ tokens ] with exception:
- invalid literal for int() with base 10: 'h'
-===============================================================
-parent values are:
-=============
-input
-hello there
-===============================================================
-===============================================================
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/FunctionalSupport.py", line 216, in <lambda>
-    tokens_int = UnfinishedSequence((_input,),lambda w:Sequence(list(map(int,w))),name=plain_tokens+"_int")
-
- 	 Example: out("hello there") = EVALUATION FAILURE
+ 	 Example: out("hello there") = [2, 3, 2, 2, 1, 1, 1, 2, 3, 1, 3] (ints)
+>>      s-op: out
+ 	 Example: out("hello there") = [h, a, l, a, o, a, t, a, e, a, e] (strings)
 >> .. 

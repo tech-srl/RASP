@@ -1,3 +1,4 @@
+# python3 .github/workflows/tests/make_tgts.py
 # for running on "correct" version of the repl
 import os
 

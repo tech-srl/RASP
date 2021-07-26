@@ -4,4 +4,7 @@ running example is: hello
     value: b =  5
 >>      s-op: c
  	 Example: c("hello") = [4, 5, 6, 7, 8] (ints)
->> .. .. >> .. 
+>> .. .. >> .. ..   ..        console function: foo(a, b)
+>> .. ..     value: e =  13
+    value: f =  5
+>> 
