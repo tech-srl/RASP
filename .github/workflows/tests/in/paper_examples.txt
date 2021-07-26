@@ -1,0 +1,15 @@
+load "paper_examples";
+_with_bos_selector_width(select(tokens,tokens,==)); 
+# above shouldnt work cause that should be private
+hist_bos("§hiya how are you doing there ey");
+hist_nobos("hiya howdy doodly doo");
+_flip_s("dfgdf"); # shouldn't work
+sort_bos("§dfgfhfghDVSHRDFHdfsfsfegDGDFHDFG");
+hist2_bos("§dkdnvdlvnksmncksnsknvkjns");
+sort_by_most_freq("§dnv,dmnvs,alaadslksmvxlmvlskd");
+dyck1_ptf("()(()())(((())(()(()))))((())((()()))(()))))(())((");
+dyck2_ptf("{{({(){}()})}({}){}{}}{(({}(){}))}{}(){}({}(){()(){}}){)()}");
+dyck3_ptf("()[](){{}(){}[]}[[]]([]){}()(])[[]]{{}}()[]");
+
+
+

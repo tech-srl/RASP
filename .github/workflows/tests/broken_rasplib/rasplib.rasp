@@ -1,0 +1,95 @@
+dfgdgdfg;
+tokens = tokens_str;
+
+def selector_width(sel) {
+	at0 = select(indices,0,==);
+	sAND0 = sel and at0;
+	sOR0 = sel or at0;
+	inverted = aggregate(sOR0,indicator(indices==0));
+	except0 = (1/inverted)-1;
+	valat0 = aggregate(sAND0,1,0);
+	return round(except0 + valat0);
+}
+
+def has_focus(sel) {
+	return aggregate(sel,1,0)>0;
+}
+
+full_s = select(1,1,==);
+
+def count(seq,atom) {
+	return round(
+		length * aggregate(
+			full_s, indicator(seq==atom)));
+}
+
+def contains(seq,atom) {
+	return aggregate(full_s,indicator(seq==atom))>0;
+}
+
+def max(a,b) {
+	return a if a>b else b;
+}
+
+def min(a,b) {
+	return a if a<b else b;
+}
+
+def average(a) {
+	return aggregate(full_s,s);
+}
+
+def load_from_location(seq,location) {
+	return aggregate(select(indices,location,==),seq);
+}
+
+def shift(seq,n,filler) {
+	return aggregate(
+		select(indices+n,indices,==), seq, filler);
+}
+
+def mark_last_instance(seq,val) {
+	has_val = seq == val;
+	find_val = select(seq,val,==);
+	find_later = select(indices,indices,>);
+	find_later_val = find_val and find_later;
+	has_later_val = has_focus(find_later_val);
+	return has_val and not has_later_val;
+}
+
+def mark_first_instance(seq,val) {
+	has_val = seq == val;
+	find_val = select(seq,val,==);
+	find_earlier = select(indices,indices,>);
+	find_earlier_val = find_val and find_earlier;
+	has_earlier_val = has_focus(find_earlier_val);
+	return has_val and not has_earlier_val;	
+}
+
+def select_from_last(seq,val) {
+	return select(mark_last_instance(seq,val),True,==);
+}
+
+def select_from_first(seq,val) {
+	return select(mark_first_instance(seq,val),True,==);
+}
+
+def sort(seq,key) {
+	select_earlier_in_sorted = 
+		select(key,key,<) or (select(key,key,==) and select(indices,indices,<));
+	target_position = 
+		selector_width(select_earlier_in_sorted);
+	select_new_val = 
+		select(target_position,indices,==);
+	return aggregate(select_new_val,seq);
+}
+
+def select_next_identical(seq) {
+	select_prev_identical = 
+		select(seq,seq,==) and select(indices,indices,<);
+	num_prev_identical = 
+		selector_width(select_prev_identical);
+	return select(seq,seq,==) and select(num_prev_identical,num_prev_identical+1,==);
+}
+
+

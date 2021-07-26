@@ -1,0 +1,25 @@
+RASP 0.0
+running example is: hello
+>>      s-op: indices
+ 	 Example: indices("hello") = [0, 1, 2, 3, 4] (ints)
+>>      s-op: length
+ 	 Example: length("hello") = [5]*5 (ints)
+>>      s-op: tokens
+ 	 Example: tokens("hello") = [h, e, l, l, o] (strings)
+>>      s-op: out
+ 	 Example: out("hello") = [1, 2, 3, 4, 5] (ints)
+>>      s-op: out
+ 	 Example: out("hello") = [0, 3, 6, 9, 12] (ints)
+>> >>      s-op: tokens
+ 	 Example: tokens([4, 7, 10]) = [4, 7, 10] (ints)
+>>      s-op: out
+ 	 Example: out([4, 7, 10]) = [0, 7, 20] (ints)
+>>      s-op: out
+ 	 Example: out([4, 7, 10]) = [4]*3 (ints)
+>> >>      s-op: tokens
+ 	 Example: tokens("hello there") = [h, e, l, l, o,  , t, h, e, r, e] (strings)
+>>      s-op: out
+ 	 Example: out("hello there") = [2, 3, 2, 2, 1, 1, 1, 2, 3, 1, 3] (ints)
+>>      s-op: out
+ 	 Example: out("hello there") = [h, a, l, a, o, a, t, a, e, a, e] (strings)
+>> .. 

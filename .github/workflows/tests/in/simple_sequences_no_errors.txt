@@ -1,0 +1,14 @@
+indices;
+length;
+tokens;
+indices+1;
+indices*3;
+set example [4,7,10]
+tokens=tokens_int;
+tokens*indices;
+tokens[0];
+set example "hello there"
+tokens = tokens_str;
+selector_width(select(tokens,tokens,==));
+"a" if indices%2==1 else tokens;
+
