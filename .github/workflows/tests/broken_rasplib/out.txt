@@ -1,5 +1,0 @@
-RASP 0.0
-running example is: hello
-		!!ignoring input:
-	 Error: Undefined variable: dfgdgdfg
->> 

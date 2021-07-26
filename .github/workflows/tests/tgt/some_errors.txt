@@ -25,19 +25,19 @@ plain unfinished tuple
 ([h, e, l, l, o] (strings),)
 ===============================================================
 ===============================================================
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/FunctionalSupport.py", line 369, in <lambda>
+  File "/home/runner/work/RASP/RASP/RASP_support/FunctionalSupport.py", line 369, in <lambda>
     parents2res = lambda s,vt:_aggregate(s,vt,elementwise_function,default=default)
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/Support.py", line 110, in aggregate
+  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 110, in aggregate
     return to_sequences(apply_average_select(select,k_vars,func,default))
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/Support.py", line 189, in apply_average_select
+  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 189, in apply_average_select
     means_per_index = [apply_and_average_single_index(candidates_by_varname,
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/Support.py", line 189, in <listcomp>
+  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 189, in <listcomp>
     means_per_index = [apply_and_average_single_index(candidates_by_varname,
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/Support.py", line 185, in apply_and_average_single_index
+  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 185, in apply_and_average_single_index
     return tuple(mean(index_scores,o_by_i) for o_by_i in outputs_by_varname) # return_sequences expects multiple outputs to be in tuple form
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/Support.py", line 185, in <genexpr>
+  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 185, in <genexpr>
     return tuple(mean(index_scores,o_by_i) for o_by_i in outputs_by_varname) # return_sequences expects multiple outputs to be in tuple form
-  File "/Users/Gail/Dropbox/active python projects/RASP setting up tests/RASP_support/Support.py", line 178, in mean
+  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 178, in mean
     raise Exception("asked to average multiple values, but they are non-numbers: "+str(vals))
 
  	 Example: out("hello") = EVALUATION FAILURE
