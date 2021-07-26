@@ -16,7 +16,7 @@ if not os.path.exists(outpath):
 all_names = things_in_path(inpath)
 
 def run_input(name):
-	os.system("python3 RASP_Support/REPL.py <"+inpath+"/"+name+" >"+outpath+"/"+name)
+	os.system("python3 RASP_support/REPL.py <"+inpath+"/"+name+" >"+outpath+"/"+name)
 
 def run_inputs():
 	for n in all_names:

@@ -25,7 +25,6 @@ jobs:
           python3 .github/workflows/tests/runall.py
       - name: make sure output is equivalent to target for individual files
         run: |
-          cat .github/workflows/tests/out/smol.txt
           diff .github/workflows/tests/out/smol.txt                       .github/workflows/tests/tgt/smol.txt 
           diff .github/workflows/tests/out/simple_sequences_no_errors.txt .github/workflows/tests/tgt/simple_sequences_no_errors.txt 
           diff .github/workflows/tests/out/some_errors.txt                .github/workflows/tests/tgt/some_errors.txt 
@@ -37,6 +36,6 @@ jobs:
           diff concatenated_outs.txt concatenated_tgts.txt 
       - name: move in broken rasplib to see if it prints errors for that properly
         run: |
-          mv .github/workflows/tests/broken_rasplib/rasplib.rasp RASP_Support/rasplib.rasp
-          python3 RASP_Support/REPL.py <.github/workflows/tests/broken_rasplib/empty.txt >.github/workflows/tests/broken_rasplib/out.txt
+          mv .github/workflows/tests/broken_rasplib/rasplib.rasp RASP_support/rasplib.rasp
+          python3 RASP_support/REPL.py <.github/workflows/tests/broken_rasplib/empty.txt >.github/workflows/tests/broken_rasplib/out.txt
           diff .github/workflows/tests/broken_rasplib/out.txt .github/workflows/tests/broken_rasplib/tgt.txt
