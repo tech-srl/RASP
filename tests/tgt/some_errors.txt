@@ -25,19 +25,19 @@ plain unfinished tuple
 ([h, e, l, l, o] (strings),)
 ===============================================================
 ===============================================================
-  File "/home/runner/work/RASP/RASP/RASP_support/FunctionalSupport.py", line 369, in <lambda>
+  File "[current]/RASP_support/FunctionalSupport.py", line 369, in <lambda>
     parents2res = lambda s,vt:_aggregate(s,vt,elementwise_function,default=default)
-  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 110, in aggregate
+  File "[current]/RASP_support/Support.py", line 110, in aggregate
     return to_sequences(apply_average_select(select,k_vars,func,default))
-  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 189, in apply_average_select
+  File "[current]/RASP_support/Support.py", line 189, in apply_average_select
     means_per_index = [apply_and_average_single_index(candidates_by_varname,
-  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 189, in <listcomp>
+  File "[current]/RASP_support/Support.py", line 189, in <listcomp>
     means_per_index = [apply_and_average_single_index(candidates_by_varname,
-  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 185, in apply_and_average_single_index
+  File "[current]/RASP_support/Support.py", line 185, in apply_and_average_single_index
     return tuple(mean(index_scores,o_by_i) for o_by_i in outputs_by_varname) # return_sequences expects multiple outputs to be in tuple form
-  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 185, in <genexpr>
+  File "[current]/RASP_support/Support.py", line 185, in <genexpr>
     return tuple(mean(index_scores,o_by_i) for o_by_i in outputs_by_varname) # return_sequences expects multiple outputs to be in tuple form
-  File "/home/runner/work/RASP/RASP/RASP_support/Support.py", line 178, in mean
+  File "[current]/RASP_support/Support.py", line 178, in mean
     raise Exception("asked to average multiple values, but they are non-numbers: "+str(vals))
 
  	 Example: out("hello") = EVALUATION FAILURE
@@ -51,3 +51,4 @@ plain unfinished tuple
 >>      dict: out = {}
 >> 	!! antlr exception: mismatched input 'if' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
 >> .. 
+

@@ -23,3 +23,4 @@ running example is: hello
 >> 	 =  [P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, T, P, P, P, P, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F] (strings)
 >> 	 =  [P, T, P, T, P, T, P, P, P, P, P, P, P, P, P, T, P, P, P, T, P, P, P, T, P, T, P, T, P, F, F, F, F, F, F, F, F, F, F, F, F, F, F] (strings)
 >> .. .. .. 
+
