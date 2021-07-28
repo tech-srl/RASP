@@ -1,0 +1,28 @@
+RASP 0.0
+running example is: hello
+>>     value: f =  10
+>> 		!!ignoring input:
+	 Error: Undefined variable: f
+    value: a =  3
+		!!ignoring input:
+	 Error: Undefined variable: f
+    value: b =  7
+		!!ignoring input:
+	 Error: Undefined variable: a
+    value: c =  7
+		!!ignoring input:
+	 Error: Undefined variable: _b
+    value: e =  4
+>>     value: a =  3
+>>     value: b =  7
+>>     value: c =  7
+>> 		!!ignoring input:
+	 Error: Undefined variable: d
+>>     value: e =  4
+>>     value: f =  10
+>> 		!!ignoring input:
+	 Error: Undefined variable: _a
+>> 		!!ignoring input:
+	 Error: Undefined variable: _b
+>> .. .. .. .. .. 
+

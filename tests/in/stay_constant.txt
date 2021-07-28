@@ -1,0 +1,13 @@
+a=4;
+b=a;
+a=3;
+a;
+b; # should still be 4
+a=indices;
+b=a;
+a=a+1;
+a;
+b; # should not be affected
+
+
+

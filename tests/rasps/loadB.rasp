@@ -1,0 +1,5 @@
+g=f; # should fail, even if f is defined outside
+# to be loaded by loadA, for testing a nested load
+b=7;
+_b = 8;
+_c=a; # should fail because a doesn't exist here, no matter who called the load

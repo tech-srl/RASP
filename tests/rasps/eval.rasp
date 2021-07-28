@@ -1,0 +1,2 @@
+a= indices+4;
+a("hello"); # at least for now: do not want these evals to print to the terminal when loading a file

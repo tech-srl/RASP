@@ -1,0 +1,6 @@
+RASP 0.0
+running example is: hello
+>>     value: b =  3
+    value: a =  12
+>> .. .. .. .. 
+

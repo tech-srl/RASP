@@ -1,0 +1,23 @@
+a=3;
+for i in range(4) {
+	a = a+i;
+}
+
+a;
+
+## NOTE: currently, not printing anything from for loops.
+
+# However, I would not be opposed to changing it such that for
+# loops print all created values once done.
+# (filtered similarly to loading files, i.e., only print 
+# last value for each variable). 
+# this would require careful change to code, 
+# and a change to this test as well. 
+
+# For now this test is here to verify consistency. 
+# If you do change this behaviour, please give a PR focused on this 
+# change alone
+
+
+
+

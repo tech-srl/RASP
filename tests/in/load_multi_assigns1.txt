@@ -1,0 +1,5 @@
+load "tests/rasps/multi_assigns1";
+
+
+
+

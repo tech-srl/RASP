@@ -1,0 +1,8 @@
+RASP 0.0
+running example is: hello
+>>     value: a =  7
+    value: c =  5
+    value: d =  11
+    value: b =  8
+>> .. .. .. .. 
+

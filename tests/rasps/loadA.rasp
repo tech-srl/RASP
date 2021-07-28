@@ -1,0 +1,7 @@
+a=f; # should fail, even if f is defined outside
+a=3;
+load "tests/rasps/loadB";
+c=b;
+d=_b; # should fail because can't load a private value
+_a=4;
+e=_a;

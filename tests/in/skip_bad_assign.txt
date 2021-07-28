@@ -1,0 +1,16 @@
+a=g; # should fail because g doesn't exist
+b=a; # should also fail because a was not set, so a should also not exist
+g=3; # now g exists
+g;
+a; # a,b should not exist retroactively though
+b;
+a=g;
+a;
+b;
+b=a;
+a;
+b;
+
+
+
+
