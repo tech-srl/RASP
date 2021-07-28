@@ -51,12 +51,12 @@ if __name__ == "__main__":
 	passed_inputs = run_inputs()
 	print("passed all inputs:",passed_inputs)
 	print("=====\n\n=====")
-	passed_broken_intialisations = run_broken_libs()
-	print("properly reports broken initialisations:",passed_broken_intialisations)
+	passed_broken_libs = run_broken_libs()
+	print("properly reports broken libs:",passed_broken_libs)
 	print("=====\n\n=====")
 
 
-	passed_everything = False not in [passed_inputs,passed_broken_intialisations]
+	passed_everything = False not in [passed_inputs,passed_broken_libs]
 	print("=====\npassed everything:",passed_everything)
 	if passed_everything:
 		exit(0)

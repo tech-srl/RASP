@@ -1,0 +1,16 @@
+def blbl() {
+	return
+	# TODO: this will get printed first even if this unfinished function is somewhere lower in the file.... this
+	# is something that needs to be fixed. but allow this ordering to go untested for now because not going to
+	# deliberately enforce a mistake. fix correct order of prints, and then do add appropriate tests, later
+}
+
+
+1(hi);
+
+tokens = tokens_str; # no error
+
+
+
+c = 1+"a";
+c,d = 5;

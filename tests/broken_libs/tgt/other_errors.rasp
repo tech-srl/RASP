@@ -1,0 +1,7 @@
+RASP 0.0
+running example is: hello
+	!! antlr exception: mismatched input '}' expecting {'(', '{', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, ID} 	-- ignoring input
+not implemented this command yet! ignoring
+something went wrong: unsupported operand type(s) for +: 'int' and 'str'
+something went wrong: object of type 'int' has no len()
+>> 
