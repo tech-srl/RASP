@@ -1,0 +1,156 @@
+RASP 0.0
+running example is: hello
+>> ..     value: depth =  3
+     list: elements = ['a', 'b', 'c']
+    value: element_variable =  "x"
+    value: set_variable =  "X"
+     list: sets = ['A', 'B', 'C']
+    value: sep =  ","
+    value: in_token =  "<"
+    value: infers_token =  ":"
+    value: notin_token =  "#"
+    value: example0 =  "a<A,a<A?"
+    value: example1 =  "a<A,a#A?"
+    value: example2 =  "a<A,a<B?"
+    value: example3 =  "a<A,x<A:x<B,a<B?"
+    value: example4 =  "a#A,x#A:x<B,a<B?"
+    value: example5 =  "a<A,x<A:x#B,a<B?"
+    value: example6 =  "a#A,x#A:x#B,a<A?"
+    value: example7 =  "a#B,x<A:x<B,a<A?"
+    value: example8 =  "b#B,x<A:x<B,a<B?"
+    value: example9 =  "x<A:x<B,x#B:x<C,b#B,b<A?"
+    value: example10 =  "x<A:x<B,x#B:x<C,b#B,b<C?"
+    value: example11 =  "a<A,x<A:x<B,x<B:x<C,a<C?"
+    value: example12 =  "a<A,x<A:x<B,x<B:x#C,a<C?"
+    value: example13 =  "a<A,x<A:x<B,x<C:x#B,a<C?"
+    value: example14 =  "a<A,b<A?"
+    value: example15 =  "a<A,a<X:b<X,b<A?"
+    value: example16 =  "a<A,a<X:b#X,b<A?"
+    value: example17 =  "a#A,a#X:b<X,b<A?"
+    value: example18 =  "a#A,a#X:b#X,b<A?"
+    value: example19 =  "a#A,b<X:a<X,b<A?"
+    value: example20 =  "a<A,a<X:b<X,b<X:c<X,c<A?"
+    value: example21 =  "a<A,a<X:b<X,x<A:x<C,b<C?"
+     tests/rasps/rover function: checkfor(item, in_ness)
+     tests/rasps/rover function: get_inference_clause_token(i)
+     tests/rasps/rover function: receiving_to_group(groupname)
+     tests/rasps/rover function: mutual_load(loader, bools_dict)
+     tests/rasps/rover function: share_sightings(sightings)
+     tests/rasps/rover function: receive(new, base, combine_condition)
+     tests/rasps/rover function: setchanger_update(contains, notcontains)
+     tests/rasps/rover function: elementchanger_update(isin, notin)
+     tests/rasps/rover function: type1_to_alltype2(t1, t2list, rel)
+     tests/rasps/rover function: getall(sightings_dict)
+     s-op: clause_index
+     s-op: relative_clause_pos
+     s-op: num_clauses
+     s-op: is_sep
+     s-op: inference_clause
+     s-op: question_clause
+     s-op: base_clause
+     s-op: is_set
+     s-op: is_element
+     s-op: inference_lefthalf
+     s-op: inference_righthalf
+     dict: load_from_token =  {
+			 "a" :     selector: plain select
+			 "b" :     selector: plain select
+			 "c" :     selector: plain select
+			 "A" :     selector: plain select
+			 "B" :     selector: plain select
+			 "C" :     selector: plain select
+                             }
+     s-op: item_in_base_clause
+     selector: load_other_base_item
+     s-op: other_base_item
+     selector: load_base_op
+     s-op: base_op
+     dict: contains =  {
+			 "a" :     s-op: checkfor("a" , "<")
+			 "b" :     s-op: checkfor("b" , "<")
+			 "c" :     s-op: checkfor("c" , "<")
+                      }
+     dict: notcontains =  {
+			 "a" :     s-op: checkfor("a" , "#")
+			 "b" :     s-op: checkfor("b" , "#")
+			 "c" :     s-op: checkfor("c" , "#")
+                         }
+     dict: isin =  {
+			 "A" :     s-op: checkfor("A" , "<")
+			 "B" :     s-op: checkfor("B" , "<")
+			 "C" :     s-op: checkfor("C" , "<")
+                  }
+     dict: notin =  {
+			 "A" :     s-op: checkfor("A" , "#")
+			 "B" :     s-op: checkfor("B" , "#")
+			 "C" :     s-op: checkfor("C" , "#")
+                   }
+     s-op: inference_leftel
+     s-op: inference_leftop
+     s-op: inference_leftset
+     s-op: inference_rightel
+     s-op: inference_rightop
+     s-op: inference_rightset
+     s-op: setchanger
+     s-op: elementchanger
+     s-op: is_inference_receiver
+     s-op: setchanger_lr
+     s-op: setchanger_rr
+     s-op: elementchanger_lr
+     s-op: elementchanger_rr
+     s-op: left_receiver
+     s-op: right_receiver
+     s-op: receive_to_contains
+     s-op: receive_to_notcontains
+     s-op: receive_to_isin
+     s-op: receive_to_notin
+     selector: mutual_inference_set_loader
+     selector: mutual_inference_element_loader
+     selector: same_item
+     list: stages = []
+     dict: all_known =  {
+			 "contains" :     s-op: getall((dict))
+			 "notcontains" :     s-op: getall((dict))
+			 "isin" :     s-op: getall((dict))
+			 "notin" :     s-op: getall((dict))
+                       }
+     s-op: query_token
+     s-op: query_op
+     dict: needstobe =  {
+			 "a" :     s-op: s-op
+			 "b" :     s-op: s-op
+			 "c" :     s-op: s-op
+                       }
+     dict: needstonotbe =  {
+			 "a" :     s-op: s-op
+			 "b" :     s-op: s-op
+			 "c" :     s-op: s-op
+                          }
+     selector: load_question_set
+     s-op: posres
+     s-op: negres
+     s-op: res
+>> 	 =   [T]*8 (strings) [skipped full display: identical values]
+>> 	 =   [F]*8 (strings) [skipped full display: identical values]
+>> 	 =   [?]*8 (strings) [skipped full display: identical values]
+>> 	 =   [T]*16 (strings) [skipped full display: identical values]
+>> 	 =   [T]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*16 (strings) [skipped full display: identical values]
+>> 	 =   [?]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*24 (strings) [skipped full display: identical values]
+>> 	 =   [T]*24 (strings) [skipped full display: identical values]
+>> 	 =   [T]*24 (strings) [skipped full display: identical values]
+>> 	 =   [F]*24 (strings) [skipped full display: identical values]
+>> 	 =   [F]*24 (strings) [skipped full display: identical values]
+>> 	 =   [?]*8 (strings) [skipped full display: identical values]
+>> 	 =   [T]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*16 (strings) [skipped full display: identical values]
+>> 	 =   [T]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*16 (strings) [skipped full display: identical values]
+>> 	 =   [F]*16 (strings) [skipped full display: identical values]
+>> 	 =   [T]*24 (strings) [skipped full display: identical values]
+>> 	 =   [T]*24 (strings) [skipped full display: identical values]
+>> .. .. .. .. .. 
+

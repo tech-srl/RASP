@@ -1,0 +1,29 @@
+# basically a lazy attempt at a stress test, just because rover has a lot going on
+load "tests/rasps/rover";
+res(example0);
+res(example1);
+res(example2);
+res(example3);
+res(example4);
+res(example5);
+res(example6);
+res(example7);
+res(example8);
+res(example9);
+res(example10);
+res(example11);
+res(example12);
+res(example13);
+res(example14);
+res(example15);
+res(example16);
+res(example17);
+res(example18);
+res(example19);
+res(example20);
+res(example21);
+
+
+
+
+
