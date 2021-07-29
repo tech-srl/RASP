@@ -68,9 +68,13 @@ class REPL:
 		self.base_env = self.env.snapshot() # base env: the env from which every load begins
 		# bootstrap base_env with current (basically empty except indices etc) env, then load
 		# the base libraries to build the actual base env
+		self.env.storing_in_constants = True # make the library-loaded variables and functions not-overwriteable
 		for l in ["RASP_support/rasplib"]:			
 			self.run_given_line("load \""+l+"\";")
 			self.base_env = self.env.snapshot()
+		self.env.storing_in_constants = False
+		self.run_given_line("tokens=tokens_str;")
+		self.base_env = self.env.snapshot()
 		self.silent = False
 
 

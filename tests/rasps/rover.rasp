@@ -84,20 +84,20 @@ def receive(new,base,combine_condition) {
 					for n in base};
 }
 
-def setchanger_update(contains,notcontains) {
+def setchanger_update(contains_el,not_contains_el) {
 	# eg x<A:x<B
-	left_sender = {n:contains[n] if inference_leftop == in_token else notcontains[n] 
-					for n in contains};
-	right_sender = {n:notcontains[n] if inference_rightop == in_token else contains[n] 
-					for n in contains};
+	left_sender = {n:contains_el[n] if inference_leftop == in_token else not_contains_el[n] 
+					for n in contains_el};
+	right_sender = {n:not_contains_el[n] if inference_rightop == in_token else contains_el[n] 
+					for n in contains_el};
 	sender = {n:left_sender[n] if inference_lefthalf else right_sender[n] 
 					for n in left_sender};
 
-	# right receives from contains
+	# right receives from contains_el
 	incoming = mutual_load(mutual_inference_set_loader,sender);
-	contains = receive(incoming,contains,receive_to_contains);
-	notcontains = receive(incoming,notcontains,receive_to_notcontains);
-	return contains, notcontains;
+	contains_el = receive(incoming,contains_el,receive_to_contains_el);
+	not_contains_el = receive(incoming,not_contains_el,receive_to_not_contains_el);
+	return contains_el, not_contains_el;
 }
 
 def elementchanger_update(isin,notin) {
@@ -109,7 +109,7 @@ def elementchanger_update(isin,notin) {
 	sender = {n:left_sender[n] if inference_lefthalf else right_sender[n] 
 					for n in left_sender};
 
-	# right receives from contains
+	# right receives from contains_el
 	incoming = mutual_load(mutual_inference_element_loader,sender);
 	isin = receive(incoming,isin,receive_to_isin);
 	notin = receive(incoming,notin,receive_to_notin);
@@ -166,8 +166,8 @@ load_base_op = select(clause_index,clause_index,==) and
 base_op = aggregate(load_base_op,tokens,",");		 	   
 
 
-contains = {e:checkfor(e,in_token) for e in elements};
-notcontains = {e:checkfor(e,notin_token) for e in elements};
+contains_el = {e:checkfor(e,in_token) for e in elements};
+not_contains_el = {e:checkfor(e,notin_token) for e in elements};
 isin = {s:checkfor(s,in_token) for s in sets};
 notin = {s:checkfor(s,notin_token) for s in sets};
 
@@ -198,8 +198,8 @@ elementchanger_rr = "i" if inference_rightop == in_token else "ni";
 left_receiver = elementchanger_lr if elementchanger else setchanger_lr;
 right_receiver = elementchanger_rr if elementchanger else setchanger_rr;
 
-receive_to_contains = receiving_to_group("c");
-receive_to_notcontains = receiving_to_group("nc");
+receive_to_contains_el = receiving_to_group("c");
+receive_to_not_contains_el = receiving_to_group("nc");
 receive_to_isin = receiving_to_group("i");
 receive_to_notin = receiving_to_group("ni");
 
@@ -225,40 +225,40 @@ same_item = select(tokens,tokens,==);
 stages = [];
 for _ in range(depth) {
 	######## second step: all element/set values share their information!! (except for query) #######
-	contains,notcontains,isin,notin = 
-		[share_sightings(c) for c in [contains,notcontains,isin,notin]];
-	stages = stages + [{"c":contains,"nc":notcontains,"i":isin,"ni":notin}];
+	contains_el,not_contains_el,isin,notin = 
+		[share_sightings(c) for c in [contains_el,not_contains_el,isin,notin]];
+	stages = stages + [{"c":contains_el,"nc":not_contains_el,"i":isin,"ni":notin}];
 
 	######## third step: inference clauses shift values inside their sharepoints! ##########
-	new_contains,new_notcontains = setchanger_update(contains,notcontains);
+	new_contains_el,new_not_contains_el = setchanger_update(contains_el,not_contains_el);
 	new_isin,new_notin = elementchanger_update(isin,notin);
 
-	# make new values canon for correct clauses (e.g. dont make new_contains canon in an element-updating clause)
-	contains = {n:new_contains[n] if setchanger else contains[n] for n in contains};
-	notcontains = {n:new_notcontains[n] if setchanger else notcontains[n] for n in contains};
+	# make new values canon for correct clauses (e.g. dont make new_contains_el canon in an element-updating clause)
+	contains_el = {n:new_contains_el[n] if setchanger else contains_el[n] for n in contains_el};
+	not_contains_el = {n:new_not_contains_el[n] if setchanger else not_contains_el[n] for n in contains_el};
 	isin = {n:new_isin[n] if elementchanger else isin[n] for n in isin};
 	notin = {n:new_notin[n] if elementchanger else notin[n] for n in isin};
 
 
 	###### fourth step: sets share info with elements and vice versa             #######
 	###### (e.g. if x<A->x<B loaded a into B, then now a needs to know it's in B) #######
-	isin = {n:isin[n] or type1_to_alltype2(n,elements,contains) for n in isin};
-	notin = {n:notin[n] or type1_to_alltype2(n,elements,notcontains) for n in notin};
-	contains = {n:contains[n] or type1_to_alltype2(n,sets,isin) for n in contains};
-	notcontains = {n:notcontains[n] or type1_to_alltype2(n,sets,notin) for n in notcontains};
+	isin = {n:isin[n] or type1_to_alltype2(n,elements,contains_el) for n in isin};
+	notin = {n:notin[n] or type1_to_alltype2(n,elements,not_contains_el) for n in notin};
+	contains_el = {n:contains_el[n] or type1_to_alltype2(n,sets,isin) for n in contains_el};
+	not_contains_el = {n:not_contains_el[n] or type1_to_alltype2(n,sets,notin) for n in not_contains_el};
 }
 
 ##### for poking around: make list of all contained, not contained, in, notin at each position ######
 all_known = 
-	{n:getall(c) for n,c in zip(["contains","notcontains","isin","notin"],[contains,notcontains,isin,notin])};
+	{n:getall(c) for n,c in zip(["contains_el","not_contains_el","isin","notin"],[contains_el,not_contains_el,isin,notin])};
 
 
 ##### final step: ask the question
 
 query_token = aggregate(select(relative_clause_pos==0 and question_clause,True,==),tokens,"-");
 query_op = aggregate(select(relative_clause_pos==1 and question_clause,True,==),tokens,"-");
-needstobe = {n:contains[n] if query_op==in_token else notcontains[n] for n in contains};
-needstonotbe = {n:contains[n] if query_op==notin_token else notcontains[n] for n in contains};
+needstobe = {n:contains_el[n] if query_op==in_token else not_contains_el[n] for n in contains_el};
+needstonotbe = {n:contains_el[n] if query_op==notin_token else not_contains_el[n] for n in contains_el};
 
 posres = False;
 negres = False;

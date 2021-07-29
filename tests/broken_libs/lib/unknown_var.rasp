@@ -1,5 +1,4 @@
 dfgdgdfg;
-tokens = tokens_str;
 
 def selector_width(sel) {
 	at0 = select(indices,0,==);

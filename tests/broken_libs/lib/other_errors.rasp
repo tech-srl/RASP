@@ -8,7 +8,11 @@ def blbl() {
 
 1(hi);
 
-tokens = tokens_str; # no error
+# note: if set tokens in the library then it will complain later 
+# that tokens is a reserved word (as it should for things set in the library),
+# so this is now an error too
+tokens = tokens_str; 
+
 
 
 

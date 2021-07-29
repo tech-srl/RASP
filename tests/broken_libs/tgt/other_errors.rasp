@@ -4,4 +4,6 @@ running example is: hello
 not implemented this command yet! ignoring
 something went wrong: unsupported operand type(s) for +: 'int' and 'str'
 something went wrong: object of type 'int' has no len()
+		!!ignoring input:
+	 Error: Cannot set reserved name: tokens
 >> 

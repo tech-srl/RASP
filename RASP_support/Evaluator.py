@@ -1,6 +1,6 @@
 from Sugar import select, zipmap, aggregate, \
 				  tplor, tpland, tplnot, toseq, \
-				  or_selects, and_selects, not_select, full_s, indices, length
+				  or_selects, and_selects, not_select, full_s, indices
 from FunctionalSupport import Unfinished, UnfinishedSequence, UnfinishedSelect
 from Support import RASPTypeError, RASPError, Select, Sequence
 from collections.abc import Iterable
@@ -307,6 +307,7 @@ class Evaluator:
 			if index>=0:
 				sel = select(toseq(index),indices,lambda q,k:q==k,name="load from "+str(index))
 			else:
+				length = self.env.get_variable("length")
 				real_index = length + index
 				real_index.setname(length.name+str(index))
 				sel = select(real_index,indices,lambda q,k:q==k,name="load from "+str(index))

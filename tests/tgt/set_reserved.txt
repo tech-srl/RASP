@@ -1,0 +1,132 @@
+RASP 0.0
+running example is: hello
+>> >>      s-op: tokens
+ 	 Example: tokens([0, 1, 2]) = [0, 1, 2] (ints)
+>> .. 		!!ignoring input:
+	 Error: Cannot set reserved name: tokens_asis
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: tokens_str
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: tokens_int
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: tokens_bool
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: tokens_float
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: indices
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: True
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: False
+>> 	!! antlr exception: mismatched input 'if' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'else' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 	!! antlr exception: extraneous input '=' expecting {'(', '{', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'and' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'or' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: out
+>> 	!! antlr exception: mismatched input '=' expecting ID 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'return' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: range
+>> 	!! antlr exception: mismatched input '=' expecting ID 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'in' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: zip
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: len
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: get
+>> .. 		!!ignoring input:
+	 Error: Cannot set reserved name: length
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: full_s
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: selector_width
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: has_focus
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: count
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: contains
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: max
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: min
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: average
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: load_from_location
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: shift
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: mark_last_instance
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: mark_first_instance
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: select_from_last
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: select_from_first
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: sort
+>> 		!!ignoring input:
+	 Error: Cannot set reserved name: select_next_identical
+>> .. .. ..      s-op: tokens
+ 	 Example: tokens([0, 1, 2]) = [0, 1, 2] (ints)
+>> ..      s-op: tokens_asis
+ 	 Example: tokens_asis([0, 1, 2]) = [0, 1, 2] (ints)
+>>      s-op: tokens_str
+ 	 Example: tokens_str([0, 1, 2]) = [0, 1, 2] (strings)
+>>      s-op: tokens_int
+ 	 Example: tokens_int([0, 1, 2]) = [0, 1, 2] (ints)
+>>      s-op: tokens_bool
+ 	 Example: tokens_bool([0, 1, 2]) = [F, T, T] (bools)
+>>      s-op: tokens_float
+ 	 Example: tokens_float([0, 1, 2]) = [0.0, 1.0, 2.0] (floats)
+>>      s-op: indices
+ 	 Example: indices([0, 1, 2]) = [0, 1, 2] (ints)
+>>     value: True =  True
+>>     value: False =  False
+>> 	!! antlr exception: mismatched input 'if' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'else' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input ';' expecting {'(', '{', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'and' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'or' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>>     value: out =  False
+>> 	!! antlr exception: mismatched input ';' expecting ID 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'return' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 		!!ignoring input:
+	 Error: Undefined variable: range
+>> 	!! antlr exception: mismatched input ';' expecting ID 	-- ignoring input
+>> 	!! antlr exception: mismatched input 'in' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
+>> 		!!ignoring input:
+	 Error: Undefined variable: zip
+>> 		!!ignoring input:
+	 Error: Undefined variable: len
+>> 		!!ignoring input:
+	 Error: Undefined variable: get
+>> ..      s-op: length
+ 	 Example: length([0, 1, 2]) = [3]*3 (ints)
+>>      selector: full_s
+ 	 Example:
+ 			     0 1 2
+ 			 0 | 1 1 1
+ 			 1 | 1 1 1
+ 			 2 | 1 1 1
+>>      RASP_support/rasplib function: selector_width(sel)
+>>      RASP_support/rasplib function: has_focus(sel)
+>>      RASP_support/rasplib function: count(seq, atom)
+>>      RASP_support/rasplib function: contains(seq, atom)
+>>      RASP_support/rasplib function: max(a, b)
+>>      RASP_support/rasplib function: min(a, b)
+>>      RASP_support/rasplib function: average(a)
+>>      RASP_support/rasplib function: load_from_location(seq, location)
+>>      RASP_support/rasplib function: shift(seq, n, filler)
+>>      RASP_support/rasplib function: mark_last_instance(seq, val)
+>>      RASP_support/rasplib function: mark_first_instance(seq, val)
+>>      RASP_support/rasplib function: select_from_last(seq, val)
+>>      RASP_support/rasplib function: select_from_first(seq, val)
+>>      RASP_support/rasplib function: sort(seq, key)
+>>      RASP_support/rasplib function: select_next_identical(seq)
+>> .. .. 
+

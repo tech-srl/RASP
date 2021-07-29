@@ -1,4 +1,5 @@
-tokens = tokens_str;
+full_s = select(1,1,==);
+length = round(1/aggregate(full_s,indicator(indices==0)));
 
 def selector_width(sel) {
 	at0 = select(indices,0,==);
@@ -13,8 +14,6 @@ def selector_width(sel) {
 def has_focus(sel) {
 	return aggregate(sel,1,0)>0;
 }
-
-full_s = select(1,1,==);
 
 def count(seq,atom) {
 	return round(

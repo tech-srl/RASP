@@ -1,4 +1,4 @@
-from Sugar import tokens_asis, tokens_str, tokens_int, tokens_bool, tokens_float, indices, length
+from Sugar import tokens_asis, tokens_str, tokens_int, tokens_bool, tokens_float, indices
 from FunctionalSupport import Unfinished, RASPTypeError
 from Evaluator import RASPFunction
 from copy import deepcopy
@@ -20,6 +20,7 @@ class Environment:
 		self.base_setup() # nested envs can have them too. makes life simpler,
 		# instead of checking if they have the constant_variables etc in get. bit heavier on memory
 		# but no one's going to use this language for big nested stuff anyway
+		self.storing_in_constants = False
 
 	def base_setup(self):
 		self.constant_variables = {"tokens_asis":tokens_asis,
@@ -28,7 +29,6 @@ class Environment:
 						 "tokens_bool":tokens_bool,
 						 "tokens_float":tokens_float,
 						 "indices":indices,
-						 "length":length,
 						 "True":True,
 						 "False":False}
 		self.reserved_words=["if","else","not","and","or","out","def","return","range","for","in","zip","len","get"] +\
@@ -46,6 +46,7 @@ class Environment:
 			else:
 				raise RASPTypeError("environment contains element that is not unfinished,",
 									"rasp function, float, int, string, bool, or list? :",val)
+		res.constant_variables = {d:carefulcopy(self.constant_variables[d]) for d in self.constant_variables}
 		res.variables = {d:carefulcopy(self.variables[d]) for d in self.variables}
 		return res
 
@@ -64,10 +65,17 @@ class Environment:
 			return self.parent_env.get_variable(name)
 		raise UndefinedVariable(name)
 
+	def _set_checked_variable(self,name,val):
+		if self.storing_in_constants:
+			self.constant_variables[name] = val
+			self.reserved_words.append(name)
+		else:
+			self.variables[name] = val
+
 	def set_variable(self,name,val):
 		if name in self.reserved_words:
 			raise ReservedName(name)
-		self.variables[name] = val
+		self._set_checked_variable(name,val)
 		if not None is self.stealing_env:
 			if name.startswith("_") or name=="out": # things we don't want to steal
 				return

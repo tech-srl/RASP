@@ -1,0 +1,90 @@
+set example [0,1,2]
+tokens=tokens_int; # should be allowed, this one's a convenience
+# original reserved words
+tokens_asis=6;
+tokens_str=6;
+tokens_int=5;
+tokens_bool=3;
+tokens_float=2;
+indices=2;
+True=1;
+False=1;
+if=1;
+else=3;
+not=3;
+and=3;
+or=3;
+out=3;
+def=4;
+return=4;
+range=3;
+for=2;
+in=3;
+zip=3;
+len=2;
+get=2;
+# the rest are things from the library and should not be allowed
+length=6; 
+full_s = 1;
+selector_width=2;
+has_focus=2;
+count=2;
+contains=2;
+max=2;
+min=2;
+average=2;
+load_from_location=2;
+shift=2;
+mark_last_instance=2;
+mark_first_instance=2;
+select_from_last=2;
+select_from_first=2;
+sort=2;
+select_next_identical=2;
+
+
+#### assert they indeed have/have not been set:
+tokens; 
+# original reserved words
+tokens_asis;
+tokens_str;
+tokens_int;
+tokens_bool;
+tokens_float;
+indices;
+True;
+False;
+if;
+else;
+not;
+and;
+or;
+out;
+def;
+return;
+range;
+for;
+in;
+zip;
+len;
+get;
+# the rest are things from the library and should not be allowed
+length; 
+full_s;
+selector_width;
+has_focus;
+count;
+contains;
+max;
+min;
+average;
+load_from_location;
+shift;
+mark_last_instance;
+mark_first_instance;
+select_from_last;
+select_from_first;
+sort;
+select_next_identical;
+
+
