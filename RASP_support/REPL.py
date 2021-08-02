@@ -500,6 +500,14 @@ def print_select(example,select,extra_pref=""):
 if __name__ == "__main__":
 	REPL().run()
 
+
+# (set debug in this file to True)
+# (go to main RASP folder)
+# (start python3)
+# import sys
+# sys.path.append('./RASP_support')
+# import REPL
+# REPL.runner()
 def runner():
 	a = REPL()
 	try:

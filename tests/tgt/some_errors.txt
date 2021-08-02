@@ -25,7 +25,7 @@ plain unfinished tuple
 ([h, e, l, l, o] (strings),)
 ===============================================================
 ===============================================================
-  File "[current]/RASP_support/FunctionalSupport.py", line 369, in <lambda>
+  File "[current]/RASP_support/FunctionalSupport.py", line 454, in <lambda>
     parents2res = lambda s,vt:_aggregate(s,vt,elementwise_function,default=default)
   File "[current]/RASP_support/Support.py", line 110, in aggregate
     return to_sequences(apply_average_select(select,k_vars,func,default))

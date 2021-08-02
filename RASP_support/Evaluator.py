@@ -1,7 +1,7 @@
 from Sugar import select, zipmap, aggregate, \
 				  tplor, tpland, tplnot, toseq, \
 				  or_selects, and_selects, not_select, full_s, indices
-from FunctionalSupport import Unfinished, UnfinishedSequence, UnfinishedSelect
+from FunctionalSupport import Unfinished, UnfinishedSequence, UnfinishedSelect, example_input
 from Support import RASPTypeError, RASPError, Select, Sequence
 from collections.abc import Iterable
 import sys
@@ -540,9 +540,18 @@ class Evaluator:
 		exprsList = self._get_first_cont_list(ast)
 		return [self.evaluateExpr(v) for v in exprsList]
 
+	def _test_res(self,res):
+		if isinstance(res,Unfinished):
+			res(example_input(),just_pass_exception_up=True)
+
 	def evaluateExpr(self,ast,from_top=False):
 		def format_return(res,resname="out",is_application_of_unfinished=False):
 			ast.evaled_value = res
+			# run a quick test of the result (by attempting to evaluate it on an example) 
+			# to make sure there hasn't been some weird type problem, so it shouts
+			# even before someone actively tries to evaluate it
+			self._test_res(res)
+
 			if is_application_of_unfinished:
 				return JustVal(res)
 			else:

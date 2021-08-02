@@ -75,6 +75,7 @@ class Environment:
 	def set_variable(self,name,val):
 		if name in self.reserved_words:
 			raise ReservedName(name)
+
 		self._set_checked_variable(name,val)
 		if not None is self.stealing_env:
 			if name.startswith("_") or name=="out": # things we don't want to steal

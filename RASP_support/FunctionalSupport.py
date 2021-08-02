@@ -4,6 +4,7 @@ from Support import select as _select
 from Support import zipmap as _zipmap
 import traceback, sys # for readable exception handling
 from collections.abc import Iterable
+from copy import copy
 
 name_maxlen = 30
 plain_unfinished_name = "unf"
@@ -12,6 +13,7 @@ plain_unfinished_sequence_name = "s-op"
 plain_indices = "indices"
 plain_tokens = "tokens"
 
+debug = False
 
 # unique ids for all Unfinished objects, numbered by order of creation. ends up very useful sometimes
 class NextId:
@@ -47,6 +49,9 @@ class Unfinished:
 		self.setname(name if not self.is_toplevel_input else "input")
 		self.creation_order_id = creation_order_id()
 		self.min_poss_depth = min_poss_depth
+		self._real_parents = None
+		self._full_parents = None
+		self._sorted_full_parents = None
 
 	def setname(self,name,always_display_when_named=True):
 		if not None is name:
@@ -61,27 +66,125 @@ class Unfinished:
 			self.always_display = always_display_when_named # if you set something's name, you probably want to see it
 		return self # return self to allow chaining with other calls and throwing straight into a return statement etc
 
+	def get_parents(self):
+		if None is self._real_parents:
+			real_parents_part1 = [p for p in self.parents_tuple if is_real_unfinished(p)]
+			other_parents = [p for p in self.parents_tuple if not is_real_unfinished(p)]
+			res = real_parents_part1
+			for p in other_parents: 
+				res += p.get_parents() # recursion: branch back through all the parents of the unf, 
+				# always stopping wherever hit something 'real' ie a select or a sequence
+			assert len([p for p in res if isinstance(p,UnfinishedSelect)]) <= 1 # nothing is made from more than one select...
+			self._real_parents = set(res)
+		return copy(self._real_parents) # in case someone messes with the list eg popping through it
+
+
+	def _flat_compute_full_parents(self):
+		# TODO: take advantage of anywhere full_parents have already been computed, 
+		# tho, otherwise no point in doing the recursion ever
+		explored = set()
+		not_explored = set([self])
+		while not_explored:
+			p = not_explored.pop()
+			if p in explored:
+				continue # this may happen due to also adding things directly to explored sometimes
+			if None is not p._full_parents:
+				explored.update(p._full_parents) # note that _full_parents include self
+			else:
+				new_parents = p.get_parents()
+				explored.add(p)
+				not_explored.update(new_parents)
+		return explored
+
+	def _recursive_compute_full_parents(self):
+		res = self.get_parents() # get_parents returns a copy
+		res.update([self]) # full parents include self
+		for p in self.get_parents():
+			res.update(p.get_full_parents(recurse=True,trusted=True))
+		return res
+
+	def _sort_full_parents(self):
+		if None is self._sorted_full_parents:
+			self._sorted_full_parents = sorted(self._full_parents,key=lambda unf:unf.creation_order_id)
+
+	def get_full_parents(self,recurse=False,just_compute=False,trusted=False):
+		# Note: full_parents include self
+		if None is self._full_parents:
+			if recurse:
+				self._full_parents = self._recursive_compute_full_parents()
+			else:
+				self._full_parents = self._flat_compute_full_parents() 
+				# avoids recursion, and so avoids passing the max recursion depth
+				
+
+				# but now having done that we would like to store the result for all parents
+				# so we can take advantage of it in the future
+				for p in self.get_sorted_full_parents():
+					p.get_full_parents(recurse=True,just_compute=True) 
+					# have them all compute their full parents so they are ready for the future
+					# but only do this in sorted order, so recursion is always shallow
+					# (always gets shorted with self._full_parents, which is being computed here 
+					# for each unfinished starting from the top of the computation graph)
+		if not just_compute:
+			if trusted:
+				# functions where you have checked they don't modify the returned result
+				# can be marked as trusted and get the true _full_parents
+				return self._full_parents
+			else:
+				# otherwise they get a copy
+				return copy(self._full_parents)
+
+
+	def get_sorted_full_parents(self):
+		# could have just made get_full_parents give a sorted result, but
+		# wanted a function where name is already clear that result will be sorted,
+		# to avoid weird bugs in future 
+		# (especially that being not sorted will only affect performance, and possibly break recursion depth)
+		
+		if None is self._sorted_full_parents:
+			if None is self._full_parents:
+				self.get_full_parents(just_compute=True)
+			self._sort_full_parents()
+		return copy(self._sorted_full_parents)
+
+
 	def __call__(self,w,print_all_named_sequences=False,print_input=False,
-					print_all_sequences=False,print_all=False,have_printed=global_printed,topcall=True):
+					print_all_sequences=False,print_all=False,topcall=True,just_pass_exception_up=False):
 		if (not isinstance(w,Iterable)) or (not w):
 			raise RASPTypeError("RASP sequences/selectors expect non-empty iterables, got: "+str(w))
 		global_printed.b = False
 		if w == self.last_w:
 			return self.last_res # don't print same calculation multiple times
+
 		else:
 			if self.is_toplevel_input:
 				res = w
 				self.last_w, self.last_res = w, w
 			else:
 				try:
+					if topcall:
+						# before doing the main call, evaluate all parents 
+						# (in order of dependencies, attainable by using creation_order_id attribute),
+						# this avoids a deep recursion:
+						# every element that is evaluated only has to go back as far as its own 
+						# 'real' (i.e., s-op or selector) parents to hit something that has already
+						# been evaluated, and then those will not recurse further back as they 
+						# use memoization
+						for unf in self.get_sorted_full_parents():
+							unf(w,topcall=False,just_pass_exception_up=just_pass_exception_up) # evaluate
+
+
 					res = self.parents2self(*tuple(p(w,
 												print_all_named_sequences=print_all_named_sequences,
 												print_input=print_input,
 												print_all_sequences=print_all_sequences,
 												print_all=print_all,
-												topcall=False) 
+												topcall=False,
+												just_pass_exception_up=just_pass_exception_up) 
 											for p in self.parents_tuple))
 				except Exception as e:
+					if just_pass_exception_up:
+						raise e
 					if isinstance(e,RASPTypeError):
 						raise e
 					if not global_printed.b:
@@ -104,7 +207,8 @@ class Unfinished:
 						# traceback.print_exception(a,b,tb)
 
 					global_printed.b = True
-					if not topcall:
+					
+					if debug or not topcall:
 						raise
 					else:
 						return "EVALUATION FAILURE"
@@ -171,6 +275,9 @@ class UnfinishedSelect(Unfinished):
 	def __str__(self):
 		return "UnfinishedSelect object, name: "+self.name+" id: "+str(self.creation_order_id)
 
+
+def is_real_unfinished(unf): # as opposed to intermediate unfinisheds like tuples of sequences
+	return isinstance(unf,UnfinishedSequence) or isinstance(unf,UnfinishedSelect)
 
 # some tiny bit of sugar that fits here:
 def is_sequence_of_unfinishedseqs(seqs):
@@ -290,35 +397,15 @@ def example_input():
 	# be because the seperators will be special classes to avoid trouble, but basically it will just interpret it as all sequences except 
 	# the first being empty 
 
-def format_output(example_output,parents_tuple,parents2res,name,elementwise_function=None,
+def format_output(parents_tuple,parents2res,name,elementwise_function=None,
 						default=None,min_poss_depth=0,from_zipmap=False,
 						definitely_uses_identity_function=False):
-	if not isinstance(example_output,tuple):
-		return UnfinishedSequence(parents_tuple,parents2res,
+
+	return UnfinishedSequence(parents_tuple,parents2res,
 				elementwise_function=elementwise_function,default=default,
 				name=name,min_poss_depth=min_poss_depth,from_zipmap=from_zipmap,
 				definitely_uses_identity_function=definitely_uses_identity_function)
-	else:
-		num_outputs = len(example_output)
-		names = name
-		if not isinstance(names,list) or isinstance(names,tuple):
-			names = [names]*num_outputs
-		assert len(names) == num_outputs
-		def get_ith_output(i):
-			return lambda x:x[i] # would have this lambda directly below,
-			# but python will have this horrible thing where it then takes 
-			# the last value that the variable 'i' had for the lambda
-		unfinished_results_tuple = UnfinishedSequencesTuple(parents_tuple,parents2res)
-		return tuple( UnfinishedSequence((unfinished_results_tuple,),
-										  get_ith_output(i), 
-										  elementwise_function=elementwise_function,
-										  default=default,
-										  name=names[i],
-										  min_poss_depth=min_poss_depth,
-										  from_zipmap=from_zipmap,
-										  output_index=i,
-										  definitely_uses_identity_function=definitely_uses_identity_function) 
-															for i in range(num_outputs))
+
 
 def get_identity_function(num_params):
 	def identity1(a):
@@ -327,13 +414,13 @@ def get_identity_function(num_params):
 		return a
 	return identity1 if num_params==1 else identityx
 
+
 def zipmap(sequences_tuple,elementwise_function,name=plain_unfinished_sequence_name):
 	sequences_tuple = tupleise(sequences_tuple)
 	unfinished_parents_tuple = UnfinishedSequencesTuple(sequences_tuple) # this also takes care of turning the 
 	# value in sequences_tuple to indeed a tuple of sequences and not eg a single sequence which will 
 	# cause weird behaviour later
-	example_parents = unfinished_parents_tuple(example_input())
-	example_output = _zipmap(len(example_input()),example_parents,elementwise_function)
+
 	parents_tuple = (_input,unfinished_parents_tuple)
 	parents2res = lambda w,vt: _zipmap(len(w),vt,elementwise_function)
 	min_poss_depth = _min_poss_depth(sequences_tuple) # feedforward doesn't increase layer
@@ -351,7 +438,7 @@ def zipmap(sequences_tuple,elementwise_function,name=plain_unfinished_sequence_n
 	# 	# the 'if' is there to rule out increasing when doing a feedforward on nothing,
 	# 	# ie, when making a constant. constants are allowed to be created on layer 0, they're
 	# 	# part of the embedding or the weights that will use them later or whatever, it's fine
-	return format_output(example_output,parents_tuple,parents2res,name,
+	return format_output(parents_tuple,parents2res,name,
 					min_poss_depth=min_poss_depth,elementwise_function=elementwise_function,
 					from_zipmap=True) # at least as deep as needed MVs, but no 
 					# deeper cause FF (which happens at end of layer)
@@ -363,11 +450,9 @@ def aggregate(select,sequences_tuple,elementwise_function=None,
 	if definitely_uses_identity_function:
 		elementwise_function = get_identity_function(len(sequences_tuple))
 	unfinished_parents_tuple = UnfinishedSequencesTuple(sequences_tuple)
-	example_output = _aggregate(select(example_input()),
-		unfinished_parents_tuple(example_input()),elementwise_function,default=default)
 	parents_tuple = (select,unfinished_parents_tuple)
 	parents2res = lambda s,vt:_aggregate(s,vt,elementwise_function,default=default)
-	return format_output(example_output,parents_tuple,parents2res,name,
+	return format_output(parents_tuple,parents2res,name,
 				elementwise_function=elementwise_function,default=default,
 				min_poss_depth=max(_min_poss_depth(sequences_tuple)+1,select.min_poss_depth),
 				definitely_uses_identity_function=definitely_uses_identity_function)

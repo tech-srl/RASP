@@ -1,28 +1,11 @@
 from FunctionalSupport import Unfinished, UnfinishedSequence, UnfinishedSelect, \
-guarded_contains, guarded_compare, zipmap # need these for actually comparing sequences and not just making more sequences 
+guarded_contains, guarded_compare, zipmap, is_real_unfinished # need these for actually comparing sequences and not just making more sequences 
 from collections import defaultdict, Counter
 from copy import copy
 
 def UnfinishedFunc(f):
 	setattr(Unfinished,f.__name__,f)
 
-def is_real_unfinished(unf): # as opposed to intermediate unfinisheds like tuples of sequences
-	return isinstance(unf,UnfinishedSequence) or isinstance(unf,UnfinishedSelect)
-
-Unfinished._parents = None
-@UnfinishedFunc
-def get_parents(self):
-	if not None is self._parents:
-		return self._parents
-	real_parents_part1 = [p for p in self.parents_tuple if is_real_unfinished(p)]
-	other_parents = [p for p in self.parents_tuple if not is_real_unfinished(p)]
-	res = real_parents_part1
-	for p in other_parents: 
-		res += p.get_parents() # recursion: branch back through all the parents of the unf, 
-		# always stopping wherever hit something 'real' ie a select or a sequence
-	assert len([p for p in res if isinstance(p,UnfinishedSelect)]) <= 1 # nothing is made from more than one select...
-	self._parents = list(set(res))
-	return copy(self._parents) # in case someone messes with the list eg popping through it
 
 @UnfinishedFunc
 def get_parent_sequences(self):
@@ -30,20 +13,6 @@ def get_parent_sequences(self):
 	# and I think in order (as the parents will only be a select and a sequencestuple, and the seqs in the
 	# sequencestuple will be added in order and the select will be removed in this function)
 	return [p for p in self.get_parents() if isinstance(p,UnfinishedSequence)] # i.e. drop the selects
-
-Unfinished._full_parents = None
-@UnfinishedFunc
-def get_full_parents(self):
-	if None is self._full_parents:
-		explored = set()
-		not_explored = [self]
-		while not_explored:
-			p = not_explored.pop(0)
-			new_parents = p.get_parents()
-			explored.add(p)
-			not_explored += [p for p in new_parents if not guarded_contains(explored,p)]
-		self._full_parents = explored
-	return copy(self._full_parents)
 
 Unfinished._full_seq_parents = None
 @UnfinishedFunc
@@ -305,15 +274,15 @@ def get_nonminor_parents(self): # assumes have already marked the minor parents
 # according to current interests.
 # otherwise, may remain marked according to a different seq, or possibly all on default value 
 # (none are minor, all are important)
-	potentials = copy(self.get_parents())
+	potentials = self.get_parents()
 	nonminors = []
 	while potentials:
 		p = potentials.pop()
 		if not p.is_minor:
 			nonminors.append(p)
 		else:
-			potentials += p.get_parents()
-	return list(set(nonminors))
+			potentials.update(p.get_parents())
+	return set(nonminors)
 
 @UnfinishedFunc
 def get_nonminor_parent_sequences(self):
