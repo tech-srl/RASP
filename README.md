@@ -36,14 +36,9 @@ This will make (almost) all values in the file available in the loading environm
 Loading files in the REPL will also print a list of all loaded values.
 
 #### Syntax Highlighting
-For the Sublime Text editor, you can get syntax highlighting for `.rasp` files as follows:
-1. Install package control for sublime (you might already have it: look in the menu [Sublime Text]->[Preferences] and see if it's there. If not, follow the instructions at https://packagecontrol.io/installation).
-2. Install the 'packagedev' package through package control ([Sublime Text]->[Preferences]->[Package Control], then type [install package], then [packagedev])
-3. After installing PackageDev, create a new syntax definition file through [Tools]->[Packages]->[Package Development]->[New Syntax Definition].
-4. Copy the contents of `RASP_support/RASP.sublime-syntax` into the new syntax definition file, and save it as `RASP.sublime-syntax`.
+If you use the Sublime Text Editor, you can get RASP syntax highlighting by using the provided syntax file and instructions in the syntax_highlighting folder of this repository. 
 
-[Above is basically following the instructions in http://ilkinulas.github.io/programming/2016/02/05/sublime-text-syntax-highlighting.html , and then copying in the contents of the provided `RASP.sublime-syntax` file]
-
+If you use Emacs, you can get syntax highlighting, auto-indentation, and other cool features through Arthur Amalvy's Emacs major mode, which Arthur hosts (along with installation instructions) at https://gitlab.com/Aethor/rasp-mode .
 
 ## Examples
 
