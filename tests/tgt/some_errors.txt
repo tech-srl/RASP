@@ -5,42 +5,7 @@ running example is: hello
 >> something went wrong: unsupported operand type(s) for /: 'int' and 'str'
 >> not implemented this command yet! ignoring
 >> 	!! antlr exception: mismatched input '==' expecting {'(', '{', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, ID} 	-- ignoring input
->>      s-op: out
-===============================================================
-===============================================================
-evaluation failed in: [ s-op ] with exception:
- asked to average multiple values, but they are non-numbers: ['h', 'e', 'l', 'l', 'o']
-===============================================================
-parent values are:
-=============
-full_s
-
-{0: [1, 1, 1, 1, 1],
- 1: [1, 1, 1, 1, 1],
- 2: [1, 1, 1, 1, 1],
- 3: [1, 1, 1, 1, 1],
- 4: [1, 1, 1, 1, 1]}
-=============
-plain unfinished tuple
-([h, e, l, l, o] (strings),)
-===============================================================
-===============================================================
-  File "[current]/RASP_support/FunctionalSupport.py", line 454, in <lambda>
-    parents2res = lambda s,vt:_aggregate(s,vt,elementwise_function,default=default)
-  File "[current]/RASP_support/Support.py", line 110, in aggregate
-    return to_sequences(apply_average_select(select,k_vars,func,default))
-  File "[current]/RASP_support/Support.py", line 189, in apply_average_select
-    means_per_index = [apply_and_average_single_index(candidates_by_varname,
-  File "[current]/RASP_support/Support.py", line 189, in <listcomp>
-    means_per_index = [apply_and_average_single_index(candidates_by_varname,
-  File "[current]/RASP_support/Support.py", line 185, in apply_and_average_single_index
-    return tuple(mean(index_scores,o_by_i) for o_by_i in outputs_by_varname) # return_sequences expects multiple outputs to be in tuple form
-  File "[current]/RASP_support/Support.py", line 185, in <genexpr>
-    return tuple(mean(index_scores,o_by_i) for o_by_i in outputs_by_varname) # return_sequences expects multiple outputs to be in tuple form
-  File "[current]/RASP_support/Support.py", line 178, in mean
-    raise Exception("asked to average multiple values, but they are non-numbers: "+str(vals))
-
- 	 Example: out("hello") = EVALUATION FAILURE
+>> something went wrong: asked to average multiple values, but they are non-numbers: ['h', 'e', 'l', 'l', 'o']
 >> something went wrong: unsupported operand type(s) for +: 'int' and 'str'
 >> 	!! antlr exception: missing ID at 'in' 	-- ignoring input
 >> 	!! antlr exception: extraneous input 'in' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input

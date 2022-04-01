@@ -390,13 +390,6 @@ def or_selects(select1,select2,name=None,compare_string=None):
 	return _compose_selects(select1,select2,lambda a,b:a or b,
 					name=name,compare_string=compare_string)
 
-def example_input():
-	return [100] # all the input types (str, int, float, bool), should be able to convert 0 to their own type when go to evaluate tokens
-	# when come to have multiple inputs, this wont fly, becuase will be expecting list of iterables. consider making optional argument
-	# that says 'i have not broken it into a list of the different inputs, it is presented here with seperators'  which of course it cant
-	# be because the seperators will be special classes to avoid trouble, but basically it will just interpret it as all sequences except 
-	# the first being empty 
-
 def format_output(parents_tuple,parents2res,name,elementwise_function=None,
 						default=None,min_poss_depth=0,from_zipmap=False,
 						definitely_uses_identity_function=False):
