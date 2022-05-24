@@ -34,7 +34,7 @@ def min(a,b) {
 }
 
 def average(a) {
-	return aggregate(full_s,s);
+	return aggregate(full_s,a);
 }
 
 def load_from_location(seq,location) {
@@ -58,7 +58,7 @@ def mark_last_instance(seq,val) {
 def mark_first_instance(seq,val) {
 	has_val = seq == val;
 	find_val = select(seq,val,==);
-	find_earlier = select(indices,indices,>);
+	find_earlier = select(indices,indices,<);
 	find_earlier_val = find_val and find_earlier;
 	has_earlier_val = has_focus(find_earlier_val);
 	return has_val and not has_earlier_val;	
