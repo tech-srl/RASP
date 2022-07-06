@@ -51,8 +51,8 @@ sort_by_most_freq = _sort_by_freq_bos("§",300);
 
 def _dyck1_ptf() {
 	up_to_self = select(indices,indices,<=);
-	n_opens = (indices+1)*aggregate(up_to_self,indicator(tokens_str=="("));
-	n_closes = (indices+1)*aggregate(up_to_self,indicator(tokens_str==")"));
+	n_opens = round((indices+1)*aggregate(up_to_self,indicator(tokens_str=="(")));
+	n_closes = round((indices+1)*aggregate(up_to_self,indicator(tokens_str==")")));
 	balance = n_opens - n_closes;
 	prev_imbalances = aggregate(up_to_self,indicator(balance<0));
 	return "F" if prev_imbalances>0 else 
@@ -68,8 +68,8 @@ def dyckk_ptf(paren_pairs) {
 	opens = indicator(tokens_str in openers);
 	closes = indicator(tokens_str in closers);
 	up_to_self = select(indices,indices,<=);
-	n_opens = (indices+1)*aggregate(up_to_self,opens);
-	n_closes = (indices+1)*aggregate(up_to_self,closes);
+	n_opens = round((indices+1)*aggregate(up_to_self,opens));
+	n_closes = round((indices+1)*aggregate(up_to_self,closes));
 	depth = n_opens - n_closes;
 	delay_closer = depth + closes;
 	depth_index = selector_width(select(delay_closer,delay_closer,==) and up_to_self);
