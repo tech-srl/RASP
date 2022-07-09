@@ -20,7 +20,7 @@ running example is: hello
 >> 	 =  [0, 2, 1, 2, 1, 2, 2, 4, 2, 1, 1, 1, 4, 1, 4, 1, 1, 1, 1, 1, 1, 2, 1, 4, 1, 1] (ints)
 >> 	 =  [§, d, v, s, l, m, a, n, ,, k, x, §, §, §, §, §, §, §, §, §, §, §, §, §, §, §, §, §, §, §] (strings)
 >> 	 =  [P, T, P, P, P, P, P, T, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, T, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, T, F, F, F, F, F, F, F, F] (strings)
->> 	 =  [P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, T, P, P, P, P, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F, F] (strings)
+>> 	 =  [P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, P, T, P, P, P, P, P, P, P, P, P, P, P, T, P, T, P, T, P, T, P, P, P, P, P, P, P, P, P, P, P, P, P, T, P, F, F, F, F] (strings)
 >> 	 =  [P, T, P, T, P, T, P, P, P, P, P, P, P, P, P, T, P, P, P, T, P, P, P, T, P, T, P, T, P, F, F, F, F, F, F, F, F, F, F, F, F, F, F] (strings)
 >> .. .. .. 
 
