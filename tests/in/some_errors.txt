@@ -13,3 +13,5 @@ tokens;;
 {};
 if;
 
+tokens_asis(["a",3]);
+tokens_asis([[1,2]]);

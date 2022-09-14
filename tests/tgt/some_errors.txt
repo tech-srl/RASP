@@ -15,5 +15,11 @@ running example is: hello
 >> 	!! antlr exception: mismatched input ';' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
 >>      dict: out = {}
 >> 	!! antlr exception: mismatched input 'if' expecting {'set', 's-op', 'selector', 'show', 'full seq display', 'examples', 'exit()', 'exit', 'quit', 'quit()', 'load', 'draw', '(', 'def', '{', 'for', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, Comment, ID} 	-- ignoring input
->> .. 
+>> .. 		!!ignoring input:
+	 attempted to create sequence with vals of different types:
+		 ['a', 3]
+>> 		!!ignoring input:
+	 attempted to create sequence with illegal val types (vals must be bool, float, int or string):
+		 [[1, 2]]
+>> 
 

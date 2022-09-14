@@ -20,27 +20,50 @@ class SupportException(Exception):
 	def __init__(self,m):
 		Exception.__init__(self,m)
 
-TBAD = "bad"
+TBANNED = "banned"
+TMISMATCHED = "mismatched"
 TNAME = {bool:"bool",str:"string",int:"int",float:"float"}
 NUMTYPES = [TNAME[int],TNAME[float]]
+sorted_typenames_list = sorted(list(TNAME.values()))
+legal_types_list_string = ", ".join(sorted_typenames_list[:-1])+" or "+sorted_typenames_list[-1]
+
+def is_in_types(v,tlist):
+		for t in tlist:
+			if isinstance(v,t):
+				return True
+		return False
 
 def lazy_type_check(vals):
-	for t in [str,bool,int,float]:
+	legal_val_types = [str,bool,int,float]
+	number_types = [int,float]
+
+	# all vals are same, legal, type:
+	for t in legal_val_types:
 		b = [isinstance(v,t) for v in vals]
 		if False not in b:
 			return TNAME[t]
+
 	# allow vals to also be mixed integers and ints, treat those as floats 
 	# (but don't actually change the ints to floats, want neat printouts)
-	b = [(isinstance(v,int) or isinstance(v,float)) for v in vals]
+	b = [is_in_types(v,number_types) for v in vals]
 	if False not in b:
 		return TNAME[float]
-	return TBAD
+
+	# from here it's all bad, but lets have some clear error messages
+	b = [is_in_types(v,legal_val_types) for v in vals]
+	if False not in b:
+		return TMISMATCHED # all legal types, but mismatched
+	else:
+		return TBANNED 
+
 
 class Sequence:
 	def __init__(self,vals):
 		self.type = lazy_type_check(vals)
-		if self.type == TBAD:
-			raise RASPTypeError("attempted to create sequence with vals of different types:",vals)
+		if self.type == TMISMATCHED:
+			raise RASPTypeError(f"attempted to create sequence with vals of different types:\n\t\t {vals}")
+		if self.type == TBANNED:
+			raise RASPTypeError(f"attempted to create sequence with illegal val types (vals must be {legal_types_list_string}):\n\t\t {vals}")
 		self._vals = vals
 
 	def __str__(self):
