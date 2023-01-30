@@ -5,7 +5,7 @@ if [ "$(uname)" == "Darwin" ]; then
 	which -s brew
 	if [[ $? != 0 ]] ; then
 		echo "Wanted to install graphviz and rlwrap through homebrew, but homebrew not available."
-		echo "You can install homebrew by running: ruby -e \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\""
+		echo "You can install homebrew by running: \"ruby -e \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)\"\""
 		echo "Alternatively, you can Google other ways to install graphviz and rlwrap. They are not crucial, but:"
 		echo $rlwrap_desc
 		echo $graphviz_desc
