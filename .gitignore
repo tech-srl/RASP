@@ -1,2 +1,6 @@
+.DS_Store
 raspenv
 __pycache__
+tests/out
+tests/broken_libs/out
+comp_flows/
