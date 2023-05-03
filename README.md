@@ -36,7 +36,7 @@ This will make (almost) all values in the file available in the loading environm
 Loading files in the REPL will also print a list of all loaded values.
 
 #### Syntax Highlighting
-If you use the Sublime Text Editor, you can get RASP syntax highlighting by using the provided syntax file and instructions in the syntax_highlighting folder of this repository. 
+If you use the Sublime Text Editor or Vim, you can get RASP syntax highlighting by using the relevant provided syntax file and instructions in the syntax_highlighting folder of this repository. (Thank you to Emile Ferreira for making the Vim highlighter!)
 
 If you use Emacs, you can get syntax highlighting, auto-indentation, and other cool features through Arthur Amalvy's Emacs major mode, which Arthur hosts (along with installation instructions) at https://gitlab.com/Aethor/rasp-mode .
 
