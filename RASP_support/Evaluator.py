@@ -111,6 +111,10 @@ class Evaluator:
 	def __init__(self,env,repl):
 		self.env = env
 		self.sequence_running_example = repl.sequence_running_example
+		self.backup_example = None
+				# allows evaluating something that maybe doesn't necessarily work with the main running example,
+				# but we just want to see what happens on it - e.g. so we can do draw(tokens_int+1,[1,2])
+				# without error even while the main example is still "hello"
 		self.repl = repl
 
 	def evaluate(self,ast):
@@ -134,15 +138,16 @@ class Evaluator:
 	# TODO: make at least some rudimentary comparisons of selectors somehow to merge heads idk??????
 	# maybe keep trace of operations used to create them and those with exact same parent s-ops and operations
 	# can get in? would still find eg select(0,0,==) and select(1,1,==) different, but its better than nothing at all
+		example = self.evaluateExpr(ast.inputseq) if ast.inputseq else self.sequence_running_example
+		prev_backup = self.backup_example
+		self.backup_example = example
 		unf = self.evaluateExpr(ast.unf)
 		if not isinstance(unf,UnfinishedSequence):
 			raise RASPTypeError("draw expects unfinished sequence, got:",unf)
-		example = self.evaluateExpr(ast.inputseq) if ast.inputseq else self.sequence_running_example
-		if not isinstance(example,str):
-			raise RASPTypeError("draw expects to evaluate sequence on string, got:",example)
 		unf.draw_comp_flow(example)
 		res = unf(example)
 		res.created_from_input = example
+		self.backup_example = prev_backup
 		return JustVal(res)
 
 	def assign(self,ast):
@@ -542,7 +547,22 @@ class Evaluator:
 
 	def _test_res(self,res):
 		if isinstance(res,Unfinished):
-			res(self.sequence_running_example,just_pass_exception_up=True)
+			def succeeds_with(exampe):
+				try:
+					res(example,just_pass_exception_up=True)
+				except:
+					return False
+				else:
+					return True
+			succeeds_with_backup = (self.backup_example is not None) and \
+									succeeds_with(self.backup_example)
+			if succeeds_with_backup:
+				return
+			succeeds_with_main = succeeds_with(self.sequence_running_example)
+			if succeeds_with_main:
+				return 
+			example = self.sequence_running_example if None is self.backup_example else self.backup_example
+			res(example,just_pass_exception_up=True)
 
 	def evaluateExpr(self,ast,from_top=False):
 		def format_return(res,resname="out",is_application_of_unfinished=False):
@@ -576,7 +596,20 @@ class Evaluator:
 		if ast.aggregate:
 			return format_return(self._evaluateAggregateExpr(ast.aggregate))
 		if ast.unfORfun:
+			
+			# before evaluating the unfORfun expression,
+			# consider that it may be an unf that would not work
+			# with the current running example, and allow that it may have
+			# been sent in with an example for which it will work
+			prev_backup = self.backup_example
+			input_vals = self._get_first_cont_list(ast.inputexprs)
+			if len(input_vals) == 1:
+				self.backup_example = self.evaluateExpr(input_vals[0])
+			
 			unfORfun = self.evaluateExpr(ast.unfORfun)
+			
+			self.backup_example = prev_backup
+			
 			if isinstance(unfORfun,Unfinished):
 				return format_return(self._evaluateApplication(ast,unfORfun),
 									 is_application_of_unfinished=True)

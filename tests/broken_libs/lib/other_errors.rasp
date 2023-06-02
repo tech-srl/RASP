@@ -5,8 +5,7 @@ def blbl() {
 	# deliberately enforce a mistake. fix correct order of prints, and then do add appropriate tests, later
 }
 
-
-1(hi);
+1("hi");
 
 # note: if set tokens in the library then it will complain later 
 # that tokens is a reserved word (as it should for things set in the library),
