@@ -1,17 +1,30 @@
 # RASP 
 
 ## Setup
-#### Mac or Linux
+
+#### macOS and Linux
+
 Run `./setup.sh` . It will create a python3 virtual environment and install the dependencies for RASP. It will also try to install graphviz (the non-python part) and rlwrap on your machine. If these fail, you will still be able to use RASP, however: the interface will not be as nice without `rlwrap`, and drawing s-op computation flows will not be possible without `graphviz`. 
+
 After having set up, you can run `./rasp.sh` to start the RASP read-evaluate-print-loop. 
+
 #### Windows
-Follow the instructions given in `windows instructions.txt`
+
+1. [Optional] download graphviz from link at https://www.graphviz.org/download/ (e.g. stable_windows_10_cmake_Release_x64_graphviz-install-2.47.2-win64.exe), and run the installer.
+2. [Optional] create a virtual environment and do all of the following in that environment
+3. [Optional, but necessary for drawing computation flows] pip3 install graphviz 
+4. pip3 install antlr4-python3-runtime==4.9.1
+5. to run RASP: python3 RASP_support/REPL.py
+
+A better experience can be obtained by also installing a readline wrapper, similar to rlwrap.
 
 ## The REPL
-After having set up, if you are in mac/linux, you can run `./rasp.sh` to start the RASP REPL. Otherwise, run `python3 RASP_support/REPL.py`
+
+After having set up, if you are on macOS/Linux, you can run `./rasp.sh` to start the RASP REPL. Otherwise, run `python3 RASP_support/REPL.py`
 Use Ctrl+C to quit a partially entered command, and Ctrl+D to exit the REPL.
 
 #### Initial Environment
+
 RASP starts with the base s-ops: `tokens`, `indices`, and `length`. It also has the base functions `select`, `aggregate`, and `selector_width` as described in the paper, a selector `full_s` created through `select(1,1,==)` that creates a "full" attention pattern, and several other library functions (check out `RASP_support/rasplib.rasp` to see them). 
 
 Additionally, the REPL begins with a base example, `"hello"`, on which it shows the output for each created s-op or selector. This example can be changed, and toggled on and off, through commands to the REPL.
@@ -21,6 +34,7 @@ All RASP commands end with a semicolon. Commands to the REPL -- such as changing
 Start by following along with the examples -- they are kept at the bottom of this readme.
 
 #### Note on input types:
+
 RASP expects inputs in four forms: strings, integers, floats, or booleans, handled respectively by `tokens_str`, `tokens_int`, `tokens_float`, and `tokens_bool`. Initially, RASP loads with `tokens` set to `tokens_str`, this can be changed by assignment, e.g.: `tokens=tokens_int;`. When changing the input type, you will also want to change the base example, e.g.: `set example [0,1,2]`. 
 
 Note that assignments do not retroactively change the computation trees of existing s-ops!
@@ -36,6 +50,7 @@ This will make (almost) all values in the file available in the loading environm
 Loading files in the REPL will also print a list of all loaded values.
 
 #### Syntax Highlighting
+
 If you use the Sublime Text Editor or Vim, you can get RASP syntax highlighting by using the relevant provided syntax file and instructions in the syntax_highlighting folder of this repository. (Thank you to Emile Ferreira for making the Vim highlighter!)
 
 If you use Emacs, you can get syntax highlighting, auto-indentation, and other cool features through Arthur Amalvy's Emacs major mode, which Arthur hosts (along with installation instructions) at https://gitlab.com/Aethor/rasp-mode .
