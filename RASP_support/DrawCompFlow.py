@@ -3,6 +3,7 @@ from FunctionalSupport import Unfinished, guarded_contains, base_tokens, \
 from Support import clean_val
 import os
 import string
+import analyse
 
 # fix: in ordering, we always connect bottom FF to top select. but sometimes,
 # there is no FF (if go straight into next select), or there is no rendered

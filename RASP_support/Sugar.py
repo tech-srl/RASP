@@ -2,6 +2,7 @@ from FunctionalSupport import Unfinished as _Unfinished
 from FunctionalSupport import UnfinishedSequence as _UnfinishedSequence
 from FunctionalSupport import select, zipmap
 from make_operators import add_ops
+import DrawCompFlow
 
 
 def _apply_unary_op(self, f):
