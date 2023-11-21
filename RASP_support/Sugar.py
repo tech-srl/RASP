@@ -68,7 +68,7 @@ def asbool(seq):
 def tplnot(seq, name=None):
 	# this one does correct conversion using asbool and then we really can just
 	# do ==False
-	res = asbool(seq) == False
+	res = asbool(seq) is False
 	return _addname(res, name, "( not " + str(seq.name) + " )")
 
 
