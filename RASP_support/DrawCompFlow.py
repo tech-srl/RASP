@@ -3,7 +3,7 @@ from FunctionalSupport import Unfinished, guarded_contains, base_tokens, \
 from Support import clean_val
 import os
 import string
-import analyse
+import analyse # adds useful functions to all the Unfinisheds
 
 # fix: in ordering, we always connect bottom FF to top select. but sometimes,
 # there is no FF (if go straight into next select), or there is no rendered
@@ -74,8 +74,9 @@ def makeQKStable(qvars, kvars, select, ref_in_g):
 	_, _, kvars_colour = colour_scheme(KVAR)
 	# select has qvars along the rows and kvars along the columns, so we'll do
 	# the same. i.e. top rows will just be the kvars and first columns will
-	# just be the qvars if (not qvars) and (not kvars): # no qvars or kvars ->
-	# full select -> dont waste space drawing
+	# just be the qvars.
+	# if (not qvars) and (not kvars): 
+	# 	# no qvars or kvars -> full select -> dont waste space drawing.
 	# 	num_rows, num_columns = 0, 0
 	# 	pass
 	# else:
@@ -196,8 +197,8 @@ class Table:
 		if len(rowtype_order) > 1:
 			self.add_rowtype_cell = True
 		else:
-			assert len(seqs_by_rowtype.keys(
-			)) == 1, "table got multiple row types but no order for them"
+			errnote = "table got multiple row types but no order for them"
+			assert len(seqs_by_rowtype.keys()) == 1, errnote
 			rowtype_order = list(seqs_by_rowtype.keys())
 			self.add_rowtype_cell = not (rowtype_order[0] == RES)
 		self.note_res_dependencies = len(seqs_by_rowtype.get(RES, [])) > 1
@@ -495,12 +496,12 @@ class Layer:
 		return self.top_object().top_right_portstr()
 
 	def add_to_graph(self, g):
-		with g.subgraph(name=self.name) as s:
-			s.attr(fillcolor=layer_color, label='layer '+str(self.depth),
+		with g.subgraph(name=self.name) as lg:
+			lg.attr(fillcolor=layer_color, label='layer '+str(self.depth),
 				   fontcolor='black', style='filled')
 			for h in self.heads:
-				h.add_to_graph(s)
-			self.ff_table.add_to_graph(s)
+				h.add_to_graph(lg)
+			self.ff_table.add_to_graph(lg)
 
 	def add_organising_edges(self, g):
 		if self.ff_table.empty:
@@ -581,10 +582,10 @@ def draw_comp_flow(self, w, filename=None,
 	# (though it will not be able to draw computation flows without it)
 	from graphviz import Digraph
 	g = Digraph('g')
-	# with curved lines it fusses over separating score edges
-	g.attr(splines='polyline')
+	# with curved lines it fusses over separating score edges	
 	# and makes weirdly curved ones that start overlapping with the sequences
 	# :(
+	g.attr(splines='polyline')
 	compflow.add_all_layers(g)
 	compflow.add_edges(g)
 	g.render(filename=filename)

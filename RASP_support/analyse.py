@@ -14,6 +14,7 @@ def get_parent_sequences(self):
 	# aggregate is applied to, and I think in order (as the parents will only
 	# be a select and a sequencestuple, and the seqs in the sequencestuple will
 	# be added in order and the select will be removed in this function)
+
 	# i.e. drop the selects
 	return [p for p in self.get_parents() if isinstance(p, UnfinishedSequence)]
 
@@ -46,13 +47,13 @@ def set_analysis_parent_select(self, options):
 	if None is self.parent_select:
 		self.analysis_parent_select = self.parent_select
 	else:
-		ps = (ps for ps in options if
+		getps = (ps for ps in options if
 			  ps.compare_string == self.get_parent_select().compare_string)
-		self.analysis_parent_select = next(ps, None)
-		assert self.analysis_parent_select is not None, "parent options given \
-			to seq: "+self.name+" did not" +\
-			"include anything equivalent to actual seq's parent" +\
-			" select ("+self.get_parent_select().compare_string+")"
+		self.analysis_parent_select = next(getps, None)
+		errnote = "parent options given to seq: "+self.name+" did not " +
+			"include anything equivalent to actual seq's parent select (" +
+			self.get_parent_select().compare_string+")"
+		assert self.analysis_parent_select is not None, errnote
 
 
 def squeeze_selects(selects):
@@ -86,8 +87,8 @@ def schedule(self, scheduler='best', remove_minors=False):
 		# all the selects needed to compute a set of seqs
 		all_selects = set(seq.get_parent_select() for seq in seqs)
 		# some of the seqs may not have parent matches,
-		all_selects -= set([None])
 		# eg, indices. these will return None, which we don't want to count
+		all_selects -= set([None])
 		return squeeze_selects(all_selects)  # squeeze identical parents
 
 	layer_selects = {i: get_seqs_selects(seq_layers[i]) for i in seq_layers}
@@ -283,21 +284,19 @@ def is_minor_comp_towards_seq(self, seq):
 		# named as a real variable in the code (and not part of some bunch of
 		# operators) -> make it visible in the comp flow too
 	if len(children) == 0:
-		# if it's the seq itself then clearly
+		# if it's the seq itself then clearly we're very interested in it. if
+		# it has no children and isnt the seq then we're checking out a weird
+		# dangly unused leaf, we shouldn't reach such a scenario through any of
+		# functions we'll be using to call this one, but might as well make
+		# this function complete just in case we forget
 		return not guarded_compare(self, seq)
-		# we're very interested in it. if it has no children and isnt the seq
-		# then we're checking out a weird dangly unused leaf, we shouldn't
-		# reach such a scenario through any of functions we'll be using to call
-		# this one, but might as well make this function complete just in case
-		# we forget
 	child = children[0]
 	if isinstance(child, UnfinishedSelect):
 		return False  # this thing feeds directly into a select, lets make it
 		# visible
-	# obtained through zipmap and feeds
+	# obtained through zipmap and feeds directly into another zipmap: minor
+	# operation as part of something more complicated
 	return (child.from_zipmap and self.from_zipmap)
-	# directly into another zipmap: minor operation as part of something more
-	# complicated
 
 
 Unfinished.is_minor = False

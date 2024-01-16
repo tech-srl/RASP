@@ -3,7 +3,9 @@ from FunctionalSupport import UnfinishedSequence as _UnfinishedSequence
 from FunctionalSupport import select, zipmap
 from make_operators import add_ops
 import DrawCompFlow
-
+# DrawCompFlow is not at all necessary for sugar, but sugar is really the
+# top-level rasp file we import, and nice to have draw_comp_flow added into
+# the sequences already on load
 
 def _apply_unary_op(self, f):
 	return zipmap(self, f)
