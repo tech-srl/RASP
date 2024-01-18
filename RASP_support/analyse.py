@@ -50,9 +50,9 @@ def set_analysis_parent_select(self, options):
 		getps = (ps for ps in options if
 			  ps.compare_string == self.get_parent_select().compare_string)
 		self.analysis_parent_select = next(getps, None)
-		errnote = "parent options given to seq: "+self.name+" did not " +
-			"include anything equivalent to actual seq's parent select (" +
-			self.get_parent_select().compare_string+")"
+		errnote = "parent options given to seq: " + self.name + " did not " \
+			+ "include anything equivalent to actual seq's parent select (" \
+			+ self.get_parent_select().compare_string + ")"
 		assert self.analysis_parent_select is not None, errnote
 
 

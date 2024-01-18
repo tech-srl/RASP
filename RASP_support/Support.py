@@ -176,14 +176,14 @@ def zipmap(n, k_vars, func):
 def verify_default_size(default, num_output_vars):
 	assert num_output_vars > 0
 	if num_output_vars == 1:
-		errnote = "aggregates on functions with single output should have"+
-			"scalar default"
+		errnote = "aggregates on functions with single output should have" \
+			+ "scalar default"
 		assert not isinstance(default, tuple), errnote
 	elif num_output_vars > 1:
-		errnote = "for function with >1 output values, default should be"+
-			" tuple of default values, of equal length to passed function's"+
-			" output values (for function with single output value, default"+
-			" should be single value too)"
+		errnote = "for function with >1 output values, default should be" \
+			+ " tuple of default values, of equal length to passed" \
+			+ " function's output values (for function with single output" \
+			+ " value, default should be single value too)"
 		check = isinstance(default, tuple) and len(default) == num_output_vars
 		assert check, errnote
 			
