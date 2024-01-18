@@ -176,15 +176,17 @@ def zipmap(n, k_vars, func):
 def verify_default_size(default, num_output_vars):
 	assert num_output_vars > 0
 	if num_output_vars == 1:
-		assert not isinstance(
-			default, tuple), "aggregates on functions with single output \
-			should have scalar default"
+		errnote = "aggregates on functions with single output should have" \
+			+ "scalar default"
+		assert not isinstance(default, tuple), errnote
 	elif num_output_vars > 1:
-		assert isinstance(default, tuple) and len(default) == num_output_vars,\
-			"for function with >1 output values, default should be tuple of \
-			default values, of equal length to passed function's output \
-			values (for function with single output value, default should be \
-			single value too)"
+		errnote = "for function with >1 output values, default should be" \
+			+ " tuple of default values, of equal length to passed" \
+			+ " function's output values (for function with single output" \
+			+ " value, default should be single value too)"
+		check = isinstance(default, tuple) and len(default) == num_output_vars
+		assert check, errnote
+			
 
 
 def apply_average_select(select, k_vars, func, default=0):
@@ -214,14 +216,12 @@ def apply_average_select(select, k_vars, func, default=0):
 		verify_default_size(default, num_output_vars)
 		if not isinstance(default, tuple):
 			# specifically with how we're going to do things here in the
-			# average aggregate,
-			default = (default,)
-			# will help to actually have the outputs get passed around as
-			# tuples, even if they're scalars really.
+			# average aggregate, will help to actually have the outputs get 
+			# passed around as tuples, even if they're scalars really.
 			# but do this after the size check for the scalar one so it doesn't
-			# get filled with weird ifs... this
-			# tupled scalar thing is only a convenience in this implementation
-			# in this here function
+			# get filled with weird ifs... this tupled scalar thing is only a 
+			# convenience in this implementation in this here function
+			default = (default,)
 		return default
 
 	def apply_and_average_single_index(outputs_by_varname, index,

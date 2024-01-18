@@ -134,7 +134,6 @@ class REPL:
 		elif isinstance(val, UnfinishedSelect):
 			print(pref, extra_first_pref, "   selector:", name)
 			if self.show_selector_examples:
-				# ,name+"("+formatstr(self.selector_running_example)+") =")
 				print(pref, "\t Example:")
 				print_select(self.selector_running_example, val(
 					self.selector_running_example), extra_pref=pref)
@@ -492,10 +491,10 @@ class LineReader:
 			if isinstance(newinput, Stop):  # input stream ended
 				return Stop()
 			if is_comment(newinput):
-				# don't let comments get in and ruin things somehow don't
-				# replace newlines! this is how in-function comments get broken
-				# .replace("\n","")+" "
+				# don't let comments get in and ruin things somehow 
 				newinput = ""
+			# don't replace newlines here! this is how in-function comments get
+			# broken
 			pythoninput += newinput
 			parser = self.str_to_antlr_parser(pythoninput)
 			try:

@@ -212,8 +212,8 @@ class Evaluator:
 					+ " iterator value:", iterator_vals)
 			else:
 				# should work out by logic of last failed elif
-				assert not (len(iterator_vals) == len(iterator_names)
-							), "something wrong with Evaluator logic"
+				errnote = "something wrong with Evaluator logic"
+				assert not (len(iterator_vals) == len(iterator_names)), errnote
 				raise RASPTypeError("iterating with", len(iterator_names),
 									"names but got", len(iterator_vals),
 									"values (", iterator_vals, ")")
@@ -238,20 +238,19 @@ class Evaluator:
 
 	def _evaluateListComp(self, ast):
 		ast = ast.listcomp
-		seq = self.evaluateExpr(ast.iterable)
-		if not (isinstance(seq, list) or isinstance(seq, dict)):
+		l = self.evaluateExpr(ast.iterable)
+		if not (isinstance(l, list) or isinstance(l, dict)):
 			raise RASPTypeError(
 				"list comprehension should have got a list or dict to loop "
-				+ "over, but got:", seq)
+				+ "over, but got:", l)
 		res = []
 		iterator_names = self._names_list(ast.iterator)
-		for vals in seq:
+		for vals in l:
 			orig_env = self.env
 			self.env = self.env.make_nested()
-			# sets inside the now-nested env -
+			# sets inside the now-nested env -don't want to keep 
+			# the internal iterators after finishing this list comp
 			self._set_iterator_and_vals(iterator_names, vals)
-			# don't want to keep the internal iterators after finishing this
-			# list comp
 			res.append(self.evaluateExpr(ast.val))
 			self.env = orig_env
 		return res
@@ -309,11 +308,11 @@ class Evaluator:
 		if uop == "indicator":
 			if isinstance(uexpr, UnfinishedSequence):
 				name = "I("+uexpr.name+")"
-				zip = zipmap(uexpr, lambda a: 1 if a else 0, name=name)
-				return zip.allow_suppressing_display()
-				# naming res makes RASP think it is important, i.e.,
+				zipmapped = zipmap(uexpr, lambda a: 1 if a else 0, name=name)
+				return zipmapped.allow_suppressing_display()
+				# naming res makes interpreter think it is important, i.e.,
 				# must always be displayed. but here it has only been named for
-				# clarity, so correct RASP using .allow_suppressing_display()
+				# clarity, so correct it using .allow_suppressing_display()
 
 			raise RASPTypeError(
 				"indicator operator expects "+ENCODER_NAME+", got:", uexpr)
@@ -342,16 +341,16 @@ class Evaluator:
 		else:
 			return d[index]
 
-	def _index_into_list_or_str(self, seq, index):
-		lname = "list" if isinstance(seq, list) else "string"
+	def _index_into_list_or_str(self, l, index):
+		lname = "list" if isinstance(l, list) else "string"
 		if not isinstance(index, int):
 			raise RASPTypeError("index into", lname,
 								"has to be integer, got:", strdesc(index))
-		if index >= len(seq) or (-index) > len(seq):
+		if index >= len(l) or (-index) > len(l):
 			raise RASPValueError(
 				"index", index, "out of range for", lname, "of length",
-				len(seq))
-		return seq[index]
+				len(l))
+		return l[index]
 
 	def _index_into_sequence(self, s, index):
 		if isinstance(index, int):
@@ -405,16 +404,16 @@ class Evaluator:
 			return select(query, key, lambda q, k: q <= k)
 
 	def _evaluateBinaryExpr(self, ast):
-		def has_sequence(seq, r):
-			return isinstance(seq, UnfinishedSequence) \
+		def has_sequence(l, r):
+			return isinstance(l, UnfinishedSequence) \
 				or isinstance(r, UnfinishedSequence)
 
-		def has_selector(seq, r):
-			return isinstance(seq, UnfinishedSelect) \
+		def has_selector(l, r):
+			return isinstance(l, UnfinishedSelect) \
 				or isinstance(r, UnfinishedSelect)
 
-		def both_selectors(seq, r):
-			return isinstance(seq, UnfinishedSelect) \
+		def both_selectors(l, r):
+			return isinstance(l, UnfinishedSelect) \
 				and isinstance(r, UnfinishedSelect)
 		left = self.evaluateExpr(ast.left)
 		right = self.evaluateExpr(ast.right)

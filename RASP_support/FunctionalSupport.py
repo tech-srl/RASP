@@ -90,8 +90,9 @@ class Unfinished:
 			for p in other_parents:
 				# recursion: branch back through all the parents of the unf,
 				# always stopping wherever hit something 'real' ie a select or
-				# a sequence nothing is made from more than one select...
+				# a sequence 
 				res += p.get_parents()
+			#  nothing is made from more than one select...
 			assert len(
 				[p for p in res if isinstance(p, UnfinishedSelect)]) <= 1
 			self._real_parents = set(res)
@@ -146,8 +147,8 @@ class Unfinished:
 				for p in self.get_sorted_full_parents():
 					p.get_full_parents(recurse=True, just_compute=True)
 					# have them all compute their full parents so they are
-					# ready for the future but only do this in sorted order, so
-					# recursion is always shallow (always gets shorted with
+					# ready for the future, but only do this in sorted order, 
+					# so recursion is always shallow. (always gets shorted with
 					# self._full_parents, which is being computed here for each
 					# unfinished starting from the top of the computation
 					# graph)
@@ -164,7 +165,7 @@ class Unfinished:
 	def get_sorted_full_parents(self):
 		# could have just made get_full_parents give a sorted result, but
 		# wanted a function where name is already clear that result will be
-		# sorted, to avoid weird bugs in future (especially that being not
+		# sorted, to avoid weird bugs in future. (especially that being not
 		# sorted will only affect performance, and possibly break recursion
 		# depth)
 
@@ -205,15 +206,15 @@ class Unfinished:
 							unf(w, topcall=False,
 								just_pass_exception_up=just_pass_exception_up)
 
-					print_all = print_all_named_sequences
-					just_pass = just_pass_exception_up
+					p_a_n_s = print_all_named_sequences
+					j_p_e_u = just_pass_exception_up
 					args = tuple(p(w,
-								   print_all_named_sequences=print_all,
+								   print_all_named_sequences=p_a_n_s,
 								   print_input=print_input,
 								   print_all_sequences=print_all_sequences,
 								   print_all=print_all,
 								   topcall=False,
-								   just_pass_exception_up=just_pass)
+								   just_pass_exception_up=j_p_e_u)
 								 for p in self.parents_tuple)
 					res = self.parents2self(*args)
 				except Exception as e:
@@ -276,10 +277,12 @@ class UnfinishedSequence(Unfinished):
 				 from_zipmap=False, output_index=-1,
 				 definitely_uses_identity_function=False):
 		# min_poss_depth=0 starts all of the base sequences (eg indices) off
-		# right. might have got none from some default value, fix it before
-		# continuing because later things eg DrawCompFlow
+		# right. 
+
+		# might have got none from some default value, fix it before continuing
+		# because later things eg DrawCompFlow will expect name to be str
 		if name is None:
-			name = plain_unfinished_sequence_name  # will expect name to be str
+			name = plain_unfinished_sequence_name  
 		super(UnfinishedSequence, self).__init__(parents_tuple,
 												 parents2self, name=name,
 												 min_poss_depth=min_poss_depth)
@@ -438,11 +441,13 @@ def select(q_vars, k_vars, selector, name=None, compare_string=None):
 	# helpful for the user so consider maybe adding a tiny bit of mess here
 	# (including markings inside sequences and selectors so they know which
 	# index they're gathering to and from) to allow it
+	
 	# we're ok with getting a single q or k var, not in a tuple,
-	q_vars = tupleise(q_vars)
 	# but important to fix it before '+' on two UnfinishedSequences
-	k_vars = tupleise(k_vars)
 	# (as opposed to two tuples) sends everything sideways
+	q_vars = tupleise(q_vars)
+	k_vars = tupleise(k_vars)
+	
 	# attn layer is one after values it needs to be calculated
 	new_depth = _min_poss_depth(q_vars+k_vars)+1
 	res = UnfinishedSelect((_input,  # need input seq length to create select
@@ -543,17 +548,19 @@ def zipmap(sequences_tuple, elementwise_function,
 	# you can do it in the embedding
 	# if len(sequences_tuple)>0:
 	# 	min_poss_depth = max(min_poss_depth,1) # except for the very specific
-	#   # case where it is the very first thing to be done, in which case we do
-	#   # have to go through # one layer to get to the first feedforward.
-	# 	# the 'if' is there to rule out increasing when doing a feedforward on
-	#   # nothing, ie, when making a constant. constants are allowed to be
-	#   # created on layer 0, they're part of the embedding or the weights that
-	#   # will use them later or whatever, it's fine
+	#	# case where it is the very first thing to be done, in which case we do
+	#	# have to go through one layer to get to the first feedforward.
+	#	# the 'if' is there to rule out increasing when doing a feedforward on
+	#	# nothing, ie, when making a constant. constants are allowed to be
+	#	# created on layer 0, they're part of the embedding or the weights that
+	#	# will use them later or whatever, it's fine
+	
+	# at least as deep as needed MVs, but no deeper cause FF
+	# (which happens at end of layer)
 	return format_output(parents_tuple, parents2res, name,
 						 min_poss_depth=min_poss_depth,
 						 elementwise_function=elementwise_function,
-						 from_zipmap=True)  # at least as deep as needed MVs,
-	# but no deeper cause FF (which happens at end of layer)
+						 from_zipmap=True)  
 
 
 def aggregate(select, sequences_tuple, elementwise_function=None,
@@ -567,14 +574,16 @@ def aggregate(select, sequences_tuple, elementwise_function=None,
 	def parents2res(s, vt): return _aggregate(
 		s, vt, elementwise_function, default=default)
 	def_uses = definitely_uses_identity_function
+	
+	# at least as deep as needed attention and at least one deeper than needed
+	# MVs
 	return format_output(parents_tuple, parents2res, name,
 						 elementwise_function=elementwise_function,
 						 default=default,
 						 min_poss_depth=max(_min_poss_depth(
 							 sequences_tuple)+1, select.min_poss_depth),
 						 definitely_uses_identity_function=def_uses)
-	# at least as deep as needed attention and at least one deeper than needed
-	# MVs
+	
 
 # up to here was just plain transformer 'assembly'. any addition is a lie
 # now begin the bells and whistles
@@ -610,9 +619,9 @@ def guarded_compare(seq1, seq2):
 	return seq1 == seq2
 
 
-def guarded_contains(seq, a):
+def guarded_contains(l, a):
 	if isinstance(a, Unfinished):
-		return True in [(a is e) for e in seq]
+		return True in [(a is e) for e in l]
 	else:
-		seq = [e for e in seq if not isinstance(e, Unfinished)]
-		return a in seq
+		l = [e for e in l if not isinstance(e, Unfinished)]
+		return a in l
