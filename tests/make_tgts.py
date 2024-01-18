@@ -59,10 +59,10 @@ def run_inputs():
 		run_input(n)
 
 
-def run_broken_lib(lib):
-	os.system("cp "+joinpath(libspath, lib)+" "+RASPLIB_PATH)
+def run_broken_lib(l):
+	os.system("cp "+joinpath(libspath, l)+" "+RASPLIB_PATH)
 	os.system("python3 "+REPL_PATH+" <"+joinpath(libtestspath,
-			  "empty.txt") + " >"+joinpath(libtgtspath, lib))
+			  "empty.txt") + " >"+joinpath(libtgtspath, l))
 
 
 real_rasplib_safe_place = "make_tgts_helper/temp"
@@ -85,8 +85,8 @@ def run_broken_libs():
 	print("making the broken lib targets!")
 	save_rasplib()
 	all_libs = things_in_path(libspath)
-	for lib in all_libs:
-		run_broken_lib(lib)
+	for l in all_libs:
+		run_broken_lib(l)
 	restore_rasplib()
 
 
