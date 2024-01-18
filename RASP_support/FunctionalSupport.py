@@ -619,9 +619,9 @@ def guarded_compare(seq1, seq2):
 	return seq1 == seq2
 
 
-def guarded_contains(l, a):
+def guarded_contains(ll, a):
 	if isinstance(a, Unfinished):
-		return True in [(a is e) for e in l]
+		return True in [(a is e) for e in ll]
 	else:
-		l = [e for e in l if not isinstance(e, Unfinished)]
-		return a in l
+		ll = [e for e in ll if not isinstance(e, Unfinished)]
+		return a in ll

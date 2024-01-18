@@ -224,7 +224,7 @@ class Evaluator:
 		if not (isinstance(d, list) or isinstance(d, dict)):
 			raise RASPTypeError(
 				"dict comprehension should have got a list or dict to loop "
-				+ "over, but got:", l)
+				+ "over, but got:", d)
 		res = {}
 		iterator_names = self._names_list(ast.iterator)
 		for vals in d:
@@ -238,14 +238,14 @@ class Evaluator:
 
 	def _evaluateListComp(self, ast):
 		ast = ast.listcomp
-		l = self.evaluateExpr(ast.iterable)
-		if not (isinstance(l, list) or isinstance(l, dict)):
+		ll = self.evaluateExpr(ast.iterable)
+		if not (isinstance(ll, list) or isinstance(ll, dict)):
 			raise RASPTypeError(
 				"list comprehension should have got a list or dict to loop "
-				+ "over, but got:", l)
+				+ "over, but got:", ll)
 		res = []
 		iterator_names = self._names_list(ast.iterator)
-		for vals in l:
+		for vals in ll:
 			orig_env = self.env
 			self.env = self.env.make_nested()
 			# sets inside the now-nested env -don't want to keep 
@@ -341,16 +341,16 @@ class Evaluator:
 		else:
 			return d[index]
 
-	def _index_into_list_or_str(self, l, index):
-		lname = "list" if isinstance(l, list) else "string"
+	def _index_into_list_or_str(self, ll, index):
+		lname = "list" if isinstance(ll, list) else "string"
 		if not isinstance(index, int):
 			raise RASPTypeError("index into", lname,
 								"has to be integer, got:", strdesc(index))
-		if index >= len(l) or (-index) > len(l):
+		if index >= len(ll) or (-index) > len(ll):
 			raise RASPValueError(
 				"index", index, "out of range for", lname, "of length",
-				len(l))
-		return l[index]
+				len(ll))
+		return ll[index]
 
 	def _index_into_sequence(self, s, index):
 		if isinstance(index, int):
@@ -404,17 +404,17 @@ class Evaluator:
 			return select(query, key, lambda q, k: q <= k)
 
 	def _evaluateBinaryExpr(self, ast):
-		def has_sequence(l, r):
-			return isinstance(l, UnfinishedSequence) \
-				or isinstance(r, UnfinishedSequence)
+		def has_sequence(left, right):
+			return isinstance(left, UnfinishedSequence) \
+				or isinstance(right, UnfinishedSequence)
 
-		def has_selector(l, r):
-			return isinstance(l, UnfinishedSelect) \
-				or isinstance(r, UnfinishedSelect)
+		def has_selector(left, right):
+			return isinstance(left, UnfinishedSelect) \
+				or isinstance(right, UnfinishedSelect)
 
-		def both_selectors(l, r):
-			return isinstance(l, UnfinishedSelect) \
-				and isinstance(r, UnfinishedSelect)
+		def both_selectors(left, right):
+			return isinstance(left, UnfinishedSelect) \
+				and isinstance(right, UnfinishedSelect)
 		left = self.evaluateExpr(ast.left)
 		right = self.evaluateExpr(ast.right)
 		bop = ast.bop.text
@@ -500,7 +500,7 @@ class Evaluator:
 		default = self.evaluateExpr(ast.default) if ast.default else None
 
 		if not isinstance(sel, UnfinishedSelect):
-			raise RASPTypeError("Expected selector, got:", strdesc(selector))
+			raise RASPTypeError("Expected selector, got:", strdesc(sel))
 		if not isinstance(seq, UnfinishedSequence):
 			raise RASPTypeError("Expected sequence, got:", strdesc(seq))
 		if isinstance(default, Unfinished):
@@ -552,7 +552,7 @@ class Evaluator:
 		if not isinstance(unf, Unfinished):
 			raise RASPTypeError("Applying unfinished expects to apply",
 								ENCODER_NAME, "or selector, got:",
-								strdesc(sel))
+								strdesc(unf))
 		if not isinstance(input_val, Iterable):
 			raise RASPTypeError(
 				"Applying unfinished expects iterable input, got:",

@@ -186,7 +186,6 @@ def verify_default_size(default, num_output_vars):
 			+ " value, default should be single value too)"
 		check = isinstance(default, tuple) and len(default) == num_output_vars
 		assert check, errnote
-			
 
 
 def apply_average_select(select, k_vars, func, default=0):
