@@ -224,7 +224,7 @@ class Evaluator:
 		if not (isinstance(d, list) or isinstance(d, dict)):
 			raise RASPTypeError(
 				"dict comprehension should have got a list or dict to loop "
-				+ "over, but got:", l)
+				+ "over, but got:", d)
 		res = {}
 		iterator_names = self._names_list(ast.iterator)
 		for vals in d:
@@ -500,7 +500,7 @@ class Evaluator:
 		default = self.evaluateExpr(ast.default) if ast.default else None
 
 		if not isinstance(sel, UnfinishedSelect):
-			raise RASPTypeError("Expected selector, got:", strdesc(selector))
+			raise RASPTypeError("Expected selector, got:", strdesc(sel))
 		if not isinstance(seq, UnfinishedSequence):
 			raise RASPTypeError("Expected sequence, got:", strdesc(seq))
 		if isinstance(default, Unfinished):
@@ -552,7 +552,7 @@ class Evaluator:
 		if not isinstance(unf, Unfinished):
 			raise RASPTypeError("Applying unfinished expects to apply",
 								ENCODER_NAME, "or selector, got:",
-								strdesc(sel))
+								strdesc(unf))
 		if not isinstance(input_val, Iterable):
 			raise RASPTypeError(
 				"Applying unfinished expects iterable input, got:",
