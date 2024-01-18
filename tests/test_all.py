@@ -32,20 +32,20 @@ def run_inputs():
 	return passed
 
 
-def test_broken_lib(l):
-	os.system("cp "+joinpath(libspath, l)+" RASP_support/rasplib.rasp")
+def test_broken_lib(lib):
+	os.system("cp "+joinpath(libspath, lib)+" RASP_support/rasplib.rasp")
 	os.system("python3 RASP_support/REPL.py <"+joinpath(libtestspath,
-			  "empty.txt") + " >"+joinpath(liboutspath, l))
-	return check_equal(joinpath(liboutspath, l), joinpath(libtgtspath, l))
+			  "empty.txt") + " >"+joinpath(liboutspath, lib))
+	return check_equal(joinpath(liboutspath, lib), joinpath(libtgtspath, lib))
 
 
 def run_broken_libs():
 	save_rasplib()
 	all_libs = things_in_path(libspath)
 	passed = True
-	for l in all_libs:
-		success = test_broken_lib(l)
-		print("lib", l, "passed (i.e., properly errored):", success)
+	for lib in all_libs:
+		success = test_broken_lib(lib)
+		print("lib", lib, "passed (i.e., properly errored):", success)
 		if not success:
 			passed = False
 	restore_rasplib()
