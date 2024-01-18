@@ -177,7 +177,7 @@ def verify_default_size(default, num_output_vars):
 	assert num_output_vars > 0
 	if num_output_vars == 1:
 		errnote = "aggregates on functions with single output should have" \
-			+ "scalar default"
+			+ " scalar default"
 		assert not isinstance(default, tuple), errnote
 	elif num_output_vars > 1:
 		errnote = "for function with >1 output values, default should be" \
