@@ -1,15 +1,11 @@
-name: Acceptance Tests
-
-on: [push, workflow_dispatch]
-
+name: Python tests
+on: [push, workflow_dispatch, pull_request]
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.8, 3.9]
-
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -20,6 +16,5 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install antlr4-python3-runtime==4.9.1
-      - name: run all the tests in the python script
-        run: |
-          python3 tests/test_all.py
+      - name: Run all the Python tests
+        run: python3 tests/test_all.py
