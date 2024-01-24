@@ -160,6 +160,9 @@ def get_all_ancestor_heads_and_ffs(self,remove_minors=False):
 	all_ffs = self.get_full_seq_parents()
 	if len(all_ffs) > 1:
 		all_ffs = [m for m in all_ffs if m.from_zipmap]
+	else:
+		for ff in all_ffs:
+			ff._constant = True
 	if remove_minors:
 		all_ffs = [ff for ff in all_ffs if not ff.is_minor]
 

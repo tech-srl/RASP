@@ -387,6 +387,8 @@ class Layer:
 			ff_parents += ff.get_nonminor_parent_sequences()
 		ff_parents = list(set(ff_parents))
 		ff_parents = [p for p in ff_parents if not guarded_contains(d_ffs,p)]
+		if not ff_parents and len(d_ffs) == 1 and d_ffs[0]._constant:
+			ff_parents, d_ffs = d_ffs, ff_parents
 		rows_by_type = {RES:d_ffs,VVAR:ff_parents}
 		rowtype_order = [VVAR,RES]
 		if add_tokens_on_ff and not contains_tokens(ff_parents):
