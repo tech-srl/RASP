@@ -27,4 +27,6 @@ jobs:
       - name: 'Run PEP8 check'
         uses: quentinguidee/pep8-action@v1
         with:
-          arguments: '--ignore=E121,E123,E126,E133,E226,E241,E242,E704,W503,W504,W505,W191,E101,E128'
+          arguments: >-
+            --exclude=.svn,CVS,.bzr,.hg,.git,zzantlr
+            --ignore=E121,E123,E126,E133,E226,E241,E242,E704,W503,W504,W505,W191,E101,E128
