@@ -7,6 +7,7 @@ import DrawCompFlow
 # top-level rasp file we import, and nice to have draw_comp_flow added into
 # the sequences already on load
 
+
 def _apply_unary_op(self, f):
 	return zipmap(self, f)
 

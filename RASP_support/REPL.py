@@ -491,7 +491,7 @@ class LineReader:
 			if isinstance(newinput, Stop):  # input stream ended
 				return Stop()
 			if is_comment(newinput):
-				# don't let comments get in and ruin things somehow 
+				# don't let comments get in and ruin things somehow
 				newinput = ""
 			# don't replace newlines here! this is how in-function comments get
 			# broken

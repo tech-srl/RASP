@@ -235,7 +235,7 @@ def note_if_seeker(self):
 		return
 
 	if (not self.get_parent_sequences()) \
-			and (self.get_parent_select() is not None):
+		and (self.get_parent_select() is not None):
 		# no parent sequences, but yes parent select: this value is a function
 		# of only its parent select, i.e., a seeker (marks whether select found
 		# something or not)
