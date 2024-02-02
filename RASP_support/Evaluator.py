@@ -202,7 +202,7 @@ class Evaluator:
 		if len(iterator_names) == 1:
 			self.env.set_variable(iterator_names[0], iterator_vals)
 		elif isinstance(iterator_vals, Iterable) \
-				and (len(iterator_vals) == len(iterator_names)):
+			and (len(iterator_vals) == len(iterator_names)):
 			for n, v in zip(iterator_names, iterator_vals):
 				self.env.set_variable(n, v)
 		else:
@@ -248,7 +248,7 @@ class Evaluator:
 		for vals in ll:
 			orig_env = self.env
 			self.env = self.env.make_nested()
-			# sets inside the now-nested env -don't want to keep 
+			# sets inside the now-nested env -don't want to keep
 			# the internal iterators after finishing this list comp
 			self._set_iterator_and_vals(iterator_names, vals)
 			res.append(self.evaluateExpr(ast.val))
@@ -630,7 +630,7 @@ class Evaluator:
 			def succeeds_with(exampe):
 				try:
 					res(example, just_pass_exception_up=True)
-				except:
+				except Exception:
 					return False
 				else:
 					return True

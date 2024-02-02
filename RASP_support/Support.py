@@ -215,10 +215,10 @@ def apply_average_select(select, k_vars, func, default=0):
 		verify_default_size(default, num_output_vars)
 		if not isinstance(default, tuple):
 			# specifically with how we're going to do things here in the
-			# average aggregate, will help to actually have the outputs get 
+			# average aggregate, will help to actually have the outputs get
 			# passed around as tuples, even if they're scalars really.
 			# but do this after the size check for the scalar one so it doesn't
-			# get filled with weird ifs... this tupled scalar thing is only a 
+			# get filled with weird ifs... this tupled scalar thing is only a
 			# convenience in this implementation in this here function
 			default = (default,)
 		return default

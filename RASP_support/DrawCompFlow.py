@@ -75,7 +75,7 @@ def makeQKStable(qvars, kvars, select, ref_in_g):
 	# select has qvars along the rows and kvars along the columns, so we'll do
 	# the same. i.e. top rows will just be the kvars and first columns will
 	# just be the qvars.
-	# if (not qvars) and (not kvars): 
+	# if (not qvars) and (not kvars):
 	# 	# no qvars or kvars -> full select -> dont waste space drawing.
 	# 	num_rows, num_columns = 0, 0
 	# 	pass
@@ -582,7 +582,7 @@ def draw_comp_flow(self, w, filename=None,
 	# (though it will not be able to draw computation flows without it)
 	from graphviz import Digraph
 	g = Digraph('g')
-	# with curved lines it fusses over separating score edges	
+	# with curved lines it fusses over separating score edges
 	# and makes weirdly curved ones that start overlapping with the sequences
 	# :(
 	g.attr(splines='polyline')

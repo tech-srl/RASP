@@ -1,7 +1,7 @@
-name: Python tests
+name: Python
 on: [push, workflow_dispatch, pull_request]
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -18,3 +18,15 @@ jobs:
           pip install antlr4-python3-runtime==4.9.1
       - name: Run all the Python tests
         run: python3 tests/test_all.py
+  pep8:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: 'Run PEP8 check'
+        uses: quentinguidee/pep8-action@v1
+        with:
+          arguments: >-
+            --exclude=.svn,CVS,.bzr,.hg,.git,zzantlr
+            --ignore=E121,E123,E126,E133,E226,E241,E242,E704,W503,W504,W505,W191,E101,E128
