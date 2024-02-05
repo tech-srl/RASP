@@ -1,0 +1,35 @@
+def prepare_numbers() {
+	def dig2num(t) {
+		ddig2num = {"0":0, "1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8, "9":9};
+		res = -1;
+		for d in ddig2num {
+			res = ddig2num[d] if t==d else res;
+		}
+		return res;
+	}
+
+	add_index = aggregate(select(tokens,"+",==),indices);
+	is_val2 = indices>add_index;
+
+	as_nums = dig2num(tokens);
+
+	val2 = as_nums if is_val2 else 0;
+
+	val1_shift = length-add_index;
+	val1_target_pos = indices+val1_shift;
+	val1 = aggregate(select(val1_target_pos,indices,==),as_nums,0);
+	return val1,val2;
+}
+
+val1,val2 = prepare_numbers();
+definite_carry = val1+val2>9;
+may_carry = val1+val2==9;
+definite_no_carry = val1+val2<9;
+num_prev_def_non_carries = round(aggregate(select(indices,indices,<),indicator(definite_no_carry))*indices);
+potential_triggers = select(indices,indices,>) and select(num_prev_def_non_carries,num_prev_def_non_carries,==);
+triggered = aggregate(potential_triggers,indicator(definite_carry))>0;
+carries = definite_carry or (may_carry and triggered);
+overflowing_sums = val1+val2;
+receives_carry = aggregate(select(indices,indices+1,==),carries,False);
+overflowing_sums = overflowing_sums + indicator(receives_carry);
+longsum = overflowing_sums if overflowing_sums<10 else (overflowing_sums-10);
