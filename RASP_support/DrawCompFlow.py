@@ -556,12 +556,11 @@ def draw_comp_flow(self, w, filename=None,
 				   keep_dot=False, show=True,
 				   force_vertical_layers=True, add_tokens_on_ff=False):
 	if w is not None:
-		self(w)  # execute seq (and all its ancestors) on the given input w.
-		# if w==None, assume seq has already been executed on some input.
+		self.call(w)  # execute seq (and all its ancestors) on the given input
 		if not self.last_w == w:
 			print("evaluating input failed")
 			return
-	else:
+	else: # if w == None, assume seq has already been executed on some input.
 		w = self.last_w
 	if None is filename:
 		name = self.name

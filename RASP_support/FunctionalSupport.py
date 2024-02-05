@@ -175,7 +175,7 @@ class Unfinished:
 			self._sort_full_parents()
 		return copy(self._sorted_full_parents)
 
-	def __call__(self, w, topcall=True, just_pass_exception_up=False):
+	def call(self, w, topcall=True, just_pass_exception_up=False):
 		if (not isinstance(w, Iterable)) or (not w):
 			raise RASPTypeError(
 				"RASP sequences/selectors expect non-empty iterables, got: "
@@ -201,11 +201,11 @@ class Unfinished:
 						# further back as they use memoization
 						for unf in self.get_sorted_full_parents():
 							# evaluate
-							unf(w, topcall=False,
+							unf.call(w, topcall=False,
 								just_pass_exception_up=just_pass_exception_up)
 
 					j_p_e_u = just_pass_exception_up
-					args = tuple(p(w,
+					args = tuple(p.call(w,
 								   topcall=False,
 								   just_pass_exception_up=j_p_e_u)
 								 for p in self.parents_tuple)
@@ -232,7 +232,7 @@ class Unfinished:
 						a, b, tb = sys.exc_info()
 						tt = traceback.extract_tb(tb)
 						last_call = max([i for i, t in enumerate(tt)
-										 if "__call__" in str(t)])
+										 if "in call" in str(t)])
 						print(''.join(traceback.format_list(tt[last_call+1:])))
 
 						# traceback.print_exception(a,b,tb)

@@ -107,7 +107,7 @@ class RASPFunction:
 		return self.creator + " function: " + self.name \
 			+ "(" + ", ".join(self.argnames) + ")"
 
-	def __call__(self, *args):
+	def call(self, *args):
 		top_eval = args[-1]
 		args = args[:-1]
 		# nesting, because function shouldn't affect the enclosing environment
@@ -165,7 +165,7 @@ class Evaluator:
 		if not isinstance(unf, UnfinishedSequence):
 			raise RASPTypeError("draw expects unfinished sequence, got:", unf)
 		unf.draw_comp_flow(example)
-		res = unf(example)
+		res = unf.call(example)
 		res.created_from_input = example
 		self.backup_example = prev_backup
 		return JustVal(res)
@@ -557,7 +557,7 @@ class Evaluator:
 			raise RASPTypeError(
 				"Applying unfinished expects iterable input, got:",
 				strdesc(input_val))
-		res = unf(input_val)
+		res = unf.call(input_val)
 		res.created_from_input = input_val
 		return res
 
@@ -565,7 +565,7 @@ class Evaluator:
 		args_trees = self._get_first_cont_list(ast.inputexprs)
 		args = tuple(self.evaluateExpr(t) for t in args_trees) + (self,)
 		real_args = args[:-1]
-		res = raspfun(*args)
+		res = raspfun.call(*args)
 		if isinstance(res, Unfinished):
 			res.setname(
 				raspfun.name+"("+" , ".join(strdesc(a, desc_cap=20)
@@ -629,7 +629,7 @@ class Evaluator:
 		if isinstance(res, Unfinished):
 			def succeeds_with(exampe):
 				try:
-					res(example, just_pass_exception_up=True)
+					res.call(example, just_pass_exception_up=True)
 				except Exception:
 					return False
 				else:
@@ -643,7 +643,7 @@ class Evaluator:
 				return
 			example = self.sequence_running_example if self.backup_example \
 				is None else self.backup_example
-			res(example, just_pass_exception_up=True)
+			res.call(example, just_pass_exception_up=True)
 
 	def evaluateExpr(self, ast, from_top=False):
 		def format_return(res, resname="out",
