@@ -7,6 +7,7 @@ import DrawCompFlow
 # top-level rasp file we import, and nice to have draw_comp_flow added into
 # the sequences already on load
 
+
 def _apply_unary_op(self, f):
 	return zipmap(self, f)
 
@@ -69,8 +70,9 @@ def asbool(seq):
 
 def tplnot(seq, name=None):
 	# this one does correct conversion using asbool and then we really can just
-	# do ==False
-	res = asbool(seq) == False
+	# do == False
+	pep8hack = False  # this avoids violating E712 of PEP8
+	res = asbool(seq) == pep8hack
 	return _addname(res, name, "( not " + str(seq.name) + " )")
 
 

@@ -123,19 +123,19 @@ class REPL:
 					optional_exampledesc = name + \
 						"("+formatstr(self.sequence_running_example)+") ="
 					print_seq(self.selector_running_example,
-							  val(self.sequence_running_example),
+							  val.call(self.sequence_running_example),
 							  still_on_prev_line=True,
 							  extra_pref=pref,
 							  lastpref_if_shortprint=optional_exampledesc)
 				else:
 					print(pref, "\t Example:", name + "(" +
 						  formatstr(self.sequence_running_example) + ") =",
-						  val(self.sequence_running_example))
+						  val.call(self.sequence_running_example))
 		elif isinstance(val, UnfinishedSelect):
 			print(pref, extra_first_pref, "   selector:", name)
 			if self.show_selector_examples:
 				print(pref, "\t Example:")
-				print_select(self.selector_running_example, val(
+				print_select(self.selector_running_example, val.call(
 					self.selector_running_example), extra_pref=pref)
 		elif isinstance(val, RASPFunction):
 			print(pref, extra_first_pref, "   "+str(val))
@@ -491,7 +491,7 @@ class LineReader:
 			if isinstance(newinput, Stop):  # input stream ended
 				return Stop()
 			if is_comment(newinput):
-				# don't let comments get in and ruin things somehow 
+				# don't let comments get in and ruin things somehow
 				newinput = ""
 			# don't replace newlines here! this is how in-function comments get
 			# broken

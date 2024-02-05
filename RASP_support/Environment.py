@@ -46,7 +46,7 @@ class Environment:
 			if isinstance(val, Unfinished) or isinstance(val, RASPFunction):
 				return val  # non mutable, at least not through rasp commands
 			elif isinstance(val, float) or isinstance(val, int) \
-					or isinstance(val, str) or isinstance(val, bool):
+				or isinstance(val, str) or isinstance(val, bool):
 				return val  # non mutable
 			elif isinstance(val, list):
 				return [carefulcopy(v) for v in val]

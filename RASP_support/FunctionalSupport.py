@@ -90,7 +90,7 @@ class Unfinished:
 			for p in other_parents:
 				# recursion: branch back through all the parents of the unf,
 				# always stopping wherever hit something 'real' ie a select or
-				# a sequence 
+				# a sequence
 				res += p.get_parents()
 			#  nothing is made from more than one select...
 			assert len(
@@ -147,7 +147,7 @@ class Unfinished:
 				for p in self.get_sorted_full_parents():
 					p.get_full_parents(recurse=True, just_compute=True)
 					# have them all compute their full parents so they are
-					# ready for the future, but only do this in sorted order, 
+					# ready for the future, but only do this in sorted order,
 					# so recursion is always shallow. (always gets shorted with
 					# self._full_parents, which is being computed here for each
 					# unfinished starting from the top of the computation
@@ -175,9 +175,7 @@ class Unfinished:
 			self._sort_full_parents()
 		return copy(self._sorted_full_parents)
 
-	def __call__(self, w, print_all_named_sequences=False, print_input=False,
-				 print_all_sequences=False, print_all=False, topcall=True,
-				 just_pass_exception_up=False):
+	def call(self, w, topcall=True, just_pass_exception_up=False):
 		if (not isinstance(w, Iterable)) or (not w):
 			raise RASPTypeError(
 				"RASP sequences/selectors expect non-empty iterables, got: "
@@ -203,16 +201,11 @@ class Unfinished:
 						# further back as they use memoization
 						for unf in self.get_sorted_full_parents():
 							# evaluate
-							unf(w, topcall=False,
+							unf.call(w, topcall=False,
 								just_pass_exception_up=just_pass_exception_up)
 
-					p_a_n_s = print_all_named_sequences
 					j_p_e_u = just_pass_exception_up
-					args = tuple(p(w,
-								   print_all_named_sequences=p_a_n_s,
-								   print_input=print_input,
-								   print_all_sequences=print_all_sequences,
-								   print_all=print_all,
+					args = tuple(p.call(w,
 								   topcall=False,
 								   just_pass_exception_up=j_p_e_u)
 								 for p in self.parents_tuple)
@@ -239,7 +232,7 @@ class Unfinished:
 						a, b, tb = sys.exc_info()
 						tt = traceback.extract_tb(tb)
 						last_call = max([i for i, t in enumerate(tt)
-										 if "__call__" in str(t)])
+										 if "in call" in str(t)])
 						print(''.join(traceback.format_list(tt[last_call+1:])))
 
 						# traceback.print_exception(a,b,tb)
@@ -253,20 +246,6 @@ class Unfinished:
 
 				self.last_w, self.last_res = w, res
 
-		def should_print():
-			if isinstance(res, Sequence):
-				if print_all_named_sequences and self.name not in plain_names:
-					return True
-				if print_all_sequences:
-					return True
-				if self.is_toplevel_input and print_input:
-					return True
-			return print_all
-		if should_print():
-			print("resolved \""+self.name +
-				  (("\" from:\" "+str(self.get_own_root_input(w))+" \"")
-				   if print_root_inputs_too else ""),
-				  ":\n\t", res)
 		return res
 
 
@@ -277,12 +256,12 @@ class UnfinishedSequence(Unfinished):
 				 from_zipmap=False, output_index=-1,
 				 definitely_uses_identity_function=False):
 		# min_poss_depth=0 starts all of the base sequences (eg indices) off
-		# right. 
+		# right.
 
 		# might have got none from some default value, fix it before continuing
 		# because later things eg DrawCompFlow will expect name to be str
 		if name is None:
-			name = plain_unfinished_sequence_name  
+			name = plain_unfinished_sequence_name
 		super(UnfinishedSequence, self).__init__(parents_tuple,
 												 parents2self, name=name,
 												 min_poss_depth=min_poss_depth)
@@ -441,13 +420,13 @@ def select(q_vars, k_vars, selector, name=None, compare_string=None):
 	# helpful for the user so consider maybe adding a tiny bit of mess here
 	# (including markings inside sequences and selectors so they know which
 	# index they're gathering to and from) to allow it
-	
+
 	# we're ok with getting a single q or k var, not in a tuple,
 	# but important to fix it before '+' on two UnfinishedSequences
 	# (as opposed to two tuples) sends everything sideways
 	q_vars = tupleise(q_vars)
 	k_vars = tupleise(k_vars)
-	
+
 	# attn layer is one after values it needs to be calculated
 	new_depth = _min_poss_depth(q_vars+k_vars)+1
 	res = UnfinishedSelect((_input,  # need input seq length to create select
@@ -548,19 +527,19 @@ def zipmap(sequences_tuple, elementwise_function,
 	# you can do it in the embedding
 	# if len(sequences_tuple)>0:
 	# 	min_poss_depth = max(min_poss_depth,1) # except for the very specific
-	#	# case where it is the very first thing to be done, in which case we do
-	#	# have to go through one layer to get to the first feedforward.
-	#	# the 'if' is there to rule out increasing when doing a feedforward on
-	#	# nothing, ie, when making a constant. constants are allowed to be
-	#	# created on layer 0, they're part of the embedding or the weights that
-	#	# will use them later or whatever, it's fine
-	
+	# 	# case where it is the very first thing to be done, in which case we do
+	# 	# have to go through one layer to get to the first feedforward.
+	# 	# the 'if' is there to rule out increasing when doing a feedforward on
+	# 	# nothing, ie, when making a constant. constants are allowed to be
+	# 	# created on layer 0, they're part of the embedding or the weights that
+	# 	# will use them later or whatever, it's fine
+
 	# at least as deep as needed MVs, but no deeper cause FF
 	# (which happens at end of layer)
 	return format_output(parents_tuple, parents2res, name,
 						 min_poss_depth=min_poss_depth,
 						 elementwise_function=elementwise_function,
-						 from_zipmap=True)  
+						 from_zipmap=True)
 
 
 def aggregate(select, sequences_tuple, elementwise_function=None,
@@ -574,7 +553,7 @@ def aggregate(select, sequences_tuple, elementwise_function=None,
 	def parents2res(s, vt): return _aggregate(
 		s, vt, elementwise_function, default=default)
 	def_uses = definitely_uses_identity_function
-	
+
 	# at least as deep as needed attention and at least one deeper than needed
 	# MVs
 	return format_output(parents_tuple, parents2res, name,
@@ -583,7 +562,7 @@ def aggregate(select, sequences_tuple, elementwise_function=None,
 						 min_poss_depth=max(_min_poss_depth(
 							 sequences_tuple)+1, select.min_poss_depth),
 						 definitely_uses_identity_function=def_uses)
-	
+
 
 # up to here was just plain transformer 'assembly'. any addition is a lie
 # now begin the bells and whistles

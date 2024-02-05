@@ -123,7 +123,7 @@ def add_ops(Class, apply_unary_op, apply_binary_op):
 		return apply_binary_op(self, other, lambda a, b: pow(b, a))
 
 	# skipping and, or, xor, which are bitwise and dont implement 'and' and
-	# 'or' but rather & and |. 
+	# 'or' but rather & and |.
 	# similarly skipping lshift, rshift cause who wants them.
 	# wish i had not, and, or primitives, but can accept that dont.
 	# if people really want to do 'not' they can do '==False' instead, can do a
