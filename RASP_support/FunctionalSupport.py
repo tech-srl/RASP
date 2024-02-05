@@ -175,9 +175,7 @@ class Unfinished:
 			self._sort_full_parents()
 		return copy(self._sorted_full_parents)
 
-	def __call__(self, w, print_all_named_sequences=False, print_input=False,
-				 print_all_sequences=False, print_all=False, topcall=True,
-				 just_pass_exception_up=False):
+	def __call__(self, w, topcall=True, just_pass_exception_up=False):
 		if (not isinstance(w, Iterable)) or (not w):
 			raise RASPTypeError(
 				"RASP sequences/selectors expect non-empty iterables, got: "
@@ -206,13 +204,8 @@ class Unfinished:
 							unf(w, topcall=False,
 								just_pass_exception_up=just_pass_exception_up)
 
-					p_a_n_s = print_all_named_sequences
 					j_p_e_u = just_pass_exception_up
 					args = tuple(p(w,
-								   print_all_named_sequences=p_a_n_s,
-								   print_input=print_input,
-								   print_all_sequences=print_all_sequences,
-								   print_all=print_all,
 								   topcall=False,
 								   just_pass_exception_up=j_p_e_u)
 								 for p in self.parents_tuple)
@@ -253,20 +246,6 @@ class Unfinished:
 
 				self.last_w, self.last_res = w, res
 
-		def should_print():
-			if isinstance(res, Sequence):
-				if print_all_named_sequences and self.name not in plain_names:
-					return True
-				if print_all_sequences:
-					return True
-				if self.is_toplevel_input and print_input:
-					return True
-			return print_all
-		if should_print():
-			print("resolved \""+self.name +
-				  (("\" from:\" "+str(self.get_own_root_input(w))+" \"")
-				   if print_root_inputs_too else ""),
-				  ":\n\t", res)
 		return res
 
 
