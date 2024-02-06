@@ -185,10 +185,6 @@ def get_all_ancestor_heads_and_ffs(self, remove_minors=False):
 	if len(all_ffs) > 1:
 		# filter out non-ffs in the non-trivial case
 		all_ffs = [m for m in all_ffs if m.from_zipmap]
-	else:
-		# temporarily mark the sequence as constant in the trivial case
-		for ff in all_ffs:
-			ff.mark_as_constant()
 	if remove_minors:
 		all_ffs = [ff for ff in all_ffs if not ff.is_minor]
 

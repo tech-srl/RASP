@@ -452,6 +452,15 @@ def contains_tokens(mvs):
 				False)
 
 
+def just_base_sequence_fix(d_ffs, ff_parents):
+	# when there are no parents and only one ff, then we are actually just
+	# looking at the indices/tokens by themselves. in this case, putting that
+	# ff in as a parent (with no child) makes the layer draw it properly
+	if not ff_parents and len(d_ffs) == 1:
+		return ff_parents, d_ffs
+	return d_ffs, ff_parents
+
+
 class Layer:
 	def __init__(self, depth, d_heads, d_ffs, add_tokens_on_ff=False):
 		self.heads = []
@@ -464,12 +473,7 @@ class Layer:
 			ff_parents += ff.get_nonminor_parent_sequences()
 		ff_parents = list(set(ff_parents))
 		ff_parents = [p for p in ff_parents if not guarded_contains(d_ffs, p)]
-		# in the trivial case (no parents and only one ff), the ff is
-		# temporarily marked as constant and should be labelled as 'X'
-		for x in [ff for ff in d_ffs if ff.is_constant()]:
-			d_ffs.remove(x)
-			ff_parents.append(x)
-			x._constant = False
+		d_ffs, ff_parents = just_base_sequence_fix(d_ffs, ff_parents)
 		rows_by_type = {RES: d_ffs, VVAR: ff_parents}
 		rowtype_order = [VVAR, RES]
 		if add_tokens_on_ff and not contains_tokens(ff_parents):
