@@ -1,7 +1,7 @@
-from Support import aggregate as _aggregate
-from Support import Sequence, RASPTypeError
-from Support import select as _select
-from Support import zipmap as _zipmap
+from .Support import aggregate as _aggregate
+from .Support import Sequence, RASPTypeError
+from .Support import select as _select
+from .Support import zipmap as _zipmap
 import traceback
 import sys  # for readable exception handling
 from collections.abc import Iterable

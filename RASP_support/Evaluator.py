@@ -1,10 +1,10 @@
-from FunctionalSupport import select, zipmap, aggregate, \
+from .FunctionalSupport import select, zipmap, aggregate, \
 	or_selects, and_selects, not_select, indices, \
 	Unfinished, UnfinishedSequence, UnfinishedSelect
-from Sugar import tplor, tpland, tplnot, toseq, full_s
-from Support import RASPTypeError, RASPError
+from .Sugar import tplor, tpland, tplnot, toseq, full_s
+from .Support import RASPTypeError, RASPError
 from collections.abc import Iterable
-from zzantlr.RASPParser import RASPParser
+from .zzantlr.RASPParser import RASPParser
 
 ENCODER_NAME = "s-op"
 

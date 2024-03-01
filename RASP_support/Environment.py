@@ -1,6 +1,6 @@
-from FunctionalSupport import Unfinished, RASPTypeError, tokens_asis, \
+from .FunctionalSupport import Unfinished, RASPTypeError, tokens_asis, \
 	tokens_str, tokens_int, tokens_bool, tokens_float, indices
-from Evaluator import RASPFunction
+from .Evaluator import RASPFunction
 
 
 class UndefinedVariable(Exception):

@@ -1,4 +1,4 @@
-from FunctionalSupport import Unfinished, UnfinishedSequence, \
+from .FunctionalSupport import Unfinished, UnfinishedSequence, \
 	UnfinishedSelect, guarded_contains, guarded_compare, zipmap
 from collections import defaultdict, Counter
 from copy import copy
@@ -353,3 +353,6 @@ def pre_aggregate_comp(seq):
 	if isinstance(vreal, tuple):  # equivalently, if seq.output_index >= 0:
 		vreal = vreal[seq.output_index]
 	return vreal
+
+
+dummyimport = None
