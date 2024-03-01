@@ -1,9 +1,14 @@
-from FunctionalSupport import Unfinished, guarded_contains, base_tokens, \
+from .FunctionalSupport import Unfinished, guarded_contains, base_tokens, \
 	tokens_asis
-from Support import clean_val
+from .Support import clean_val
 import os
 import string
-import analyse  # adds useful functions to all the Unfinisheds
+
+# adds useful functions to all the Unfinisheds
+# using dummyimport to import analyse with the relative "." because python
+# won't let me do "import .analyse"
+from .analyse import dummyimport
+
 
 # fix: in ordering, we always connect bottom FF to top select. but sometimes,
 # there is no FF (if go straight into next select), or there is no rendered
@@ -602,3 +607,6 @@ def draw_comp_flow(self, w, filename=None,
 		g.view()
 	if not keep_dot:
 		os.remove(filename)
+
+
+dummyimport = None

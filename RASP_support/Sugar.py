@@ -1,11 +1,13 @@
-from FunctionalSupport import Unfinished as _Unfinished
-from FunctionalSupport import UnfinishedSequence as _UnfinishedSequence
-from FunctionalSupport import select, zipmap
-from make_operators import add_ops
-import DrawCompFlow
+from .FunctionalSupport import Unfinished as _Unfinished
+from .FunctionalSupport import UnfinishedSequence as _UnfinishedSequence
+from .FunctionalSupport import select, zipmap
+from .make_operators import add_ops
+from .DrawCompFlow import dummyimport
 # DrawCompFlow is not at all necessary for sugar, but sugar is really the
 # top-level rasp file we import, and nice to have draw_comp_flow added into
-# the sequences already on load
+# the sequences already on load. also, don't *really* need to import
+# dummy specifically, but python won't accept "import .DrawCompFlow"
+# while it will accept some form of "from .DrawCompFlow import ..."
 
 
 def _apply_unary_op(self, f):

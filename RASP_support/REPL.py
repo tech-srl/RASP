@@ -1,13 +1,13 @@
 from antlr4.error.ErrorListener import ErrorListener
 from antlr4 import CommonTokenStream, InputStream
 from collections.abc import Iterable
-from zzantlr.RASPLexer import RASPLexer
-from zzantlr.RASPParser import RASPParser
-from Environment import Environment, UndefinedVariable, ReservedName
-from FunctionalSupport import UnfinishedSequence, UnfinishedSelect, Unfinished
-from Evaluator import Evaluator, NamedVal, NamedValList, JustVal, \
+from .zzantlr.RASPLexer import RASPLexer
+from .zzantlr.RASPParser import RASPParser
+from .Environment import Environment, UndefinedVariable, ReservedName
+from .FunctionalSupport import UnfinishedSequence, UnfinishedSelect, Unfinished
+from .Evaluator import Evaluator, NamedVal, NamedValList, JustVal, \
 	RASPFunction, ArgsError, RASPTypeError, RASPValueError
-from Support import Select, Sequence, lazy_type_check
+from .Support import Select, Sequence, lazy_type_check
 
 ENCODER_NAME = "s-op"
 
