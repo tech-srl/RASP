@@ -97,7 +97,7 @@ class REPL:
 			self.selector_running_example = example
 
 	def print_welcome(self):
-		print(colored("RASP 0.0", general_color))
+		print(colored("RASP 0.1", general_color))
 		print(colored("running example is:", general_color), 
 			  colored(self.sequence_running_example, values_color))
 

@@ -5,6 +5,7 @@ from .Sugar import tplor, tpland, tplnot, toseq, full_s
 from .Support import RASPTypeError, RASPError
 from collections.abc import Iterable
 from .zzantlr.RASPParser import RASPParser
+from copy import deepcopy
 
 ENCODER_NAME = "s-op"
 
@@ -332,27 +333,62 @@ class Evaluator:
 		return list(range(*valsList))
 
 	def _index_into_dict(self, d, index):
-		if not isatom(index):
-			raise RASPTypeError(
-				"index into dict has to be atom"
-				+ " (i.e., string, int, float, bool), got:", strdesc(index))
+		def invalid_key_error(i):
+			return RASPTypeError(
+				f"index into dict has to be {ENCODER_NAME} or atom"
+				+ " (i.e., string, int, float, bool), got:", strdesc(i))
+
+		def missing_key_error(i):
+			return RASPValueError("index [", strdesc(i), "] not in dict.")
+
+		dname, indexname = d.name, index.name
+		d, index = d.val, index.val
+
+		if isinstance(index, UnfinishedSequence):
+			d = deepcopy(d)
+			def apply_d(i):
+				if i not in d:
+					raise missing_key_error(i)
+				return d[i]
+			name = f"{dname}[{indexname}]"
+			return zipmap((index,), apply_d, name=name)
+		elif not isatom(index):
+			raise invalid_key_error(index)
 		if index not in d:
-			raise RASPValueError("index [", strdesc(index), "] not in dict.")
+			raise missing_key_error(index)
 		else:
 			return d[index]
 
 	def _index_into_list_or_str(self, ll, index):
-		lname = "list" if isinstance(ll, list) else "string"
-		if not isinstance(index, int):
-			raise RASPTypeError("index into", lname,
-								"has to be integer, got:", strdesc(index))
-		if index >= len(ll) or (-index) > len(ll):
-			raise RASPValueError(
-				"index", index, "out of range for", lname, "of length",
-				len(ll))
+		lname, indexname = ll.name, index.name
+		ll, index = ll.val, index.val
+		ltype = "list" if isinstance(ll, list) else "string"
+
+		def invalid_key_error(i):
+			return RASPTypeError(f"index into {ltype} has to be",
+								 f"{ENCODER_NAME} or integer, got:", 
+								 strdesc(index))
+
+		def check_and_raise_key_error(i):
+			if i >= len(ll) or (-i) > len(ll):
+				raise RASPValueError("index", index, "out of range for", ltype,
+								     "of length", len(ll))
+		
+		if isinstance(index, UnfinishedSequence):
+			ll = deepcopy(ll)
+			def apply_l(i):
+				check_and_raise_key_error(i)
+				return ll[i]
+			name = f"{lname}[{indexname}]"
+			return zipmap((index,), apply_l, name=name)
+		elif not isinstance(index, int):
+			raise invalid_key_error(index)
+		check_and_raise_key_error(index)
 		return ll[index]
 
 	def _index_into_sequence(self, s, index):
+		sname, indexname = s.name, index.name
+		s, index = s.val, index.val
 		if isinstance(index, int):
 			if index >= 0:
 				sel = select(toseq(index), indices, lambda q,
@@ -370,19 +406,20 @@ class Evaluator:
 				"index into sequence has to be integer, got:", strdesc(index))
 
 	def _evaluateIndexing(self, ast):
-		indexable = self.evaluateExpr(ast.indexable)
-		index = self.evaluateExpr(ast.index)
+		indexable = self.evaluateExpr(ast.indexable, get_name=True)
+		index = self.evaluateExpr(ast.index, get_name=True)
 
-		if isinstance(indexable, list) or isinstance(indexable, str):
+
+		if isinstance(indexable.val, list) or isinstance(indexable.val, str):
 			return self._index_into_list_or_str(indexable, index)
-		elif isinstance(indexable, dict):
+		elif isinstance(indexable.val, dict):
 			return self._index_into_dict(indexable, index)
-		elif isinstance(indexable, UnfinishedSequence):
+		elif isinstance(indexable.val, UnfinishedSequence):
 			return self._index_into_sequence(indexable, index)
 		else:
 			raise RASPTypeError("can only index into a list, dict, string, or"
 								+ " sequence, but instead got:",
-								strdesc(indexable))
+								strdesc(indexable.val))
 
 	def _evaluateSelectExpr(self, ast):
 		key = self.evaluateExpr(ast.key)
@@ -645,7 +682,7 @@ class Evaluator:
 				is None else self.backup_example
 			res.call(example, just_pass_exception_up=True)
 
-	def evaluateExpr(self, ast, from_top=False):
+	def evaluateExpr(self, ast, from_top=False, get_name=False):
 		def format_return(res, resname="out",
 						  is_application_of_unfinished=False):
 			ast.evaled_value = res
@@ -659,7 +696,7 @@ class Evaluator:
 				return JustVal(res)
 			else:
 				self.env.set_out(res)
-				if from_top:
+				if from_top or get_name:
 					# this is when an expression has been evaled
 					return NamedVal(resname, res)
 				else:
