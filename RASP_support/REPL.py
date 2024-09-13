@@ -8,6 +8,8 @@ from .FunctionalSupport import UnfinishedSequence, UnfinishedSelect, Unfinished
 from .Evaluator import Evaluator, NamedVal, NamedValList, JustVal, \
 	RASPFunction, ArgsError, RASPTypeError, RASPValueError
 from .Support import Select, Sequence, lazy_type_check
+from termcolor import colored
+from .colors import error_color, values_color, general_color
 
 ENCODER_NAME = "s-op"
 
@@ -35,7 +37,7 @@ DEBUG = False
 
 def debprint(*a, **kw):
 	if DEBUG:
-		print(*a, **kw)
+		coloredprint(*a, **kw)
 
 
 class ReturnExample:
@@ -95,87 +97,106 @@ class REPL:
 			self.selector_running_example = example
 
 	def print_welcome(self):
-		print("RASP 0.0")
-		print("running example is:", self.sequence_running_example)
+		print(colored("RASP 0.0", general_color))
+		print(colored("running example is:", general_color), 
+			  colored(self.sequence_running_example, values_color))
 
 	def print_just_val(self, justval):
 		val = justval.val
 		if None is val:
 			return
 		if isinstance(val, Select):
-			print("\t = ")
+			print(colored("\t = ", general_color))
 			print_select(val.created_from_input, val)
 		elif isinstance(val, Sequence) and self.sequence_prints_verbose:
-			print("\t = ", end="")
+			print(colored("\t = ", general_color), end="")
 			print_seq(val.created_from_input, val, still_on_prev_line=True)
 		else:
-			print("\t = ", str(val).replace("\n", "\n\t\t\t"))
+			print(colored("\t = ", general_color), 
+				  colored(str(val).replace("\n", "\n\t\t\t"), values_color))
 
 	def print_named_val(self, name, val, ntabs=0, extra_first_pref=""):
 		pref = "\t"*ntabs
 		if (None is name) and isinstance(val, Unfinished):
 			name = val.name
 		if isinstance(val, UnfinishedSequence):
-			print(pref, extra_first_pref, "   "+ENCODER_NAME+":", name)
+			print(pref, 
+				  colored(extra_first_pref, general_color), 
+				  colored("   "+ENCODER_NAME+":", general_color),
+				  colored(name, general_color))
 			if self.show_sequence_examples:
 				if self.sequence_prints_verbose:
-					print(pref, "\t Example:", end="")
-					optional_exampledesc = name + \
-						"("+formatstr(self.sequence_running_example)+") ="
+					print(colored(f"{pref} \t Example:", general_color),
+						  end="")
+					optional_exampledesc =\
+						colored(name + "(", general_color) +\
+						colored(formatstr(self.sequence_running_example),
+								values_color) +\
+						colored(") =", general_color)
 					print_seq(self.selector_running_example,
 							  val.call(self.sequence_running_example),
 							  still_on_prev_line=True,
 							  extra_pref=pref,
 							  lastpref_if_shortprint=optional_exampledesc)
 				else:
-					print(pref, "\t Example:", name + "(" +
-						  formatstr(self.sequence_running_example) + ") =",
+					print(colored(f"{pref} \t Example: {name}(",
+								  general_color) +
+						  colored(formatstr(self.sequence_running_example), values_color) + 
+						  colored(") =", general_color),
 						  val.call(self.sequence_running_example))
 		elif isinstance(val, UnfinishedSelect):
-			print(pref, extra_first_pref, "   selector:", name)
+			print(colored(pref, general_color), 
+				  colored(extra_first_pref, general_color),
+				  colored(f"   selector: {name}", general_color))
 			if self.show_selector_examples:
-				print(pref, "\t Example:")
+				print(colored(f"{pref} \t Example:", general_color))
 				print_select(self.selector_running_example, val.call(
 					self.selector_running_example), extra_pref=pref)
 		elif isinstance(val, RASPFunction):
-			print(pref, extra_first_pref, "   "+str(val))
+			print(colored(f"{pref} {extra_first_pref}    ", general_color) +
+				  colored(str(val), general_color))
 		elif isinstance(val, list):
 			named = "   list: "+((name+" = ") if name is not None else "")
-			print(pref, extra_first_pref, named, end="")
+			print(colored(f"{pref} {extra_first_pref} {named}", 
+						  general_color), end="")
 			flat = True not in [isinstance(v, list) or isinstance(
 				v, dict) or isinstance(v, Unfinished) for v in val]
 			if flat:
-				print(val)
+				print(colored(val, values_color))
 			else:
-				print(pref, "[")
+				print(colored(f"{pref} [", general_color))
 				for v in val:
 					self.print_named_val(None, v, ntabs=ntabs+2)
-				print(pref, " "*len(named), "]")
+				print(colored(str(pref) + " "*(len(named) +2) + "]", 
+							  general_color))
 		elif isinstance(val, dict):
 			named = "   dict: "+((name+" = ") if name is not None else "")
-			print(pref, extra_first_pref, named, end="")
+			print(colored(f"{pref} {extra_first_pref} {named}",
+						  general_color), end="")
 			flat = True not in [isinstance(val[v], list) or isinstance(
 				val[v], dict) or isinstance(val[v], Unfinished) for v in val]
 			if flat:
-				print(val)
+				print(colored(val, values_color))
 			else:
-				print(pref, "{")
+				print(colored(str(pref) + " {", general_color))
 				for v in val:
 					self.print_named_val(None, val[v], ntabs=ntabs + 3,
 										 extra_first_pref=formatstr(v) + " : ")
-				print(pref, " "*len(named), "}")
+				print(colored(str(pref) + " "*(len(named) + 2) + "}",
+							  general_color))
 
 		else:
-			print(pref, "   value:", ((name+" = ")
-				  if name is not None else ""), formatstr(val))
+			namestr = (name + " = ") if name is not None else ""
+			print(colored(f"{pref}    value: {namestr}", general_color),
+				  colored(formatstr(val), values_color))
 
 	def print_example(self, nres):
 		if nres.subset in ["both", ENCODER_NAME]:
-			print("\t"+ENCODER_NAME+" example:",
-				  formatstr(self.sequence_running_example))
+			print(colored("\t"+ENCODER_NAME+" example:", general_color),
+				  colored(formatstr(self.sequence_running_example), values_color))
 		if nres.subset in ["both", "selector"]:
-			print("\tselector example:", formatstr(
-				self.selector_running_example))
+			print(colored("\tselector example:", general_color),
+				  colored(formatstr(self.selector_running_example), values_color))
 
 	def print_result(self, rp):
 		if self.silent:
@@ -266,7 +287,8 @@ class REPL:
 		try:
 			return LineReader(fromfile=fromfile).get_input_tree()
 		except AntlrException as e:
-			print("\t!! antlr exception:", e.msg, "\t-- ignoring input")
+			print(colored(f"\t!! antlr exception: {e.msg} \t-- ignoring input",
+						  error_color))
 		return None
 
 	def run_given_line(self, line):
@@ -280,8 +302,10 @@ class REPL:
 				# somewhere if not caught? idk
 				rp.print()
 		except AntlrException as e:
-			print("\t!! REPL failed to run initiating line:", line)
-			print("\t    --got antlr exception:", e.msg)
+			print(colored(f"\t!! REPL failed to run initiating line: {line}",
+						  error_color))
+			print(colored(f"\t    --got antlr exception: {e.msg}",
+						error_color))
 		return None
 
 	def assigned_to_top(self, res, env):
@@ -316,11 +340,12 @@ class REPL:
 							r in res.nvs]
 				return ResultToPrint(res, self.assigned_to_top(res, env))
 		except (UndefinedVariable, ReservedName) as e:
-			return LazyPrint("\t\t!!ignoring input:\n\t", e)
+			return LazyPrint(colored(f"\t\t!!ignoring input:\n\t {e}", error_color))
 		except NotImplementedError:
-			return LazyPrint("not implemented this command yet! ignoring")
+			return LazyPrint(
+				colored(f"not implemented this command yet! ignoring", error_color))
 		except (ArgsError, RASPTypeError, LoadError, RASPValueError) as e:
-			return LazyPrint("\t\t!!ignoring input:\n\t", e)
+			return LazyPrint(colored(f"\t\t!!ignoring input:\n\t {e}", error_color))
 		# if not replstatement or raspstatement, then comment
 		return ResultToPrint(None, False)
 
@@ -382,7 +407,8 @@ class REPL:
 			except RASPTypeError as e:
 				msg = "\t!!statement executed, but result fails on evaluation:"
 				msg += "\n\t\t"
-				careful_print(msg, e)
+				toprint = colored(f"{msg} {e}", error_color)
+				careful_print(toprint)
 			except EOFError:
 				careful_print("")
 				break
@@ -393,7 +419,8 @@ class REPL:
 			except Exception as e:
 				if DEBUG:
 					raise e
-				careful_print("something went wrong:", e)
+				careful_print(colored(f"something went wrong: {e}",
+									  error_color))
 
 
 class AntlrException(Exception):
@@ -515,10 +542,10 @@ def print_seq(example, seq, still_on_prev_line=False, extra_pref="",
 	if len(set(seq.get_vals())) == 1:
 		print(extra_pref if not still_on_prev_line else "",
 			  lastpref_if_shortprint,
-			  str(seq), end=" ")
+			  colored(str(seq), values_color), end=" ")
 		# when there is only one value, it's nicer to just print that than the
 		# full list, verbosity be damned
-		print("[skipped full display: identical values]")
+		print(colored("[skipped full display: identical values]", general_color))
 		return
 	if still_on_prev_line:
 		print("")
@@ -544,18 +571,25 @@ def print_seq(example, seq, still_on_prev_line=False, extra_pref="",
 		def padded(s):
 			return " "*(maxlen-len(s))+s
 		return " ".join(padded(v) for v in seq)
-	print(extra_pref, "\t\tinput:  ", neatline(example),
-		  "\t", "("+lazy_type_check(example)+"s)")
-	print(extra_pref, "\t\toutput: ", neatline(seq), "\t", "("+seqtype+"s)")
+	print(extra_pref, colored("\t\tinput:  ", general_color), 
+		  colored(neatline(example), values_color), "\t", 
+		  colored("("+lazy_type_check(example)+"s)", general_color))
+	print(extra_pref, colored("\t\toutput: ", general_color), 
+		  colored(neatline(seq), values_color), "\t",
+		  colored("("+seqtype+"s)", general_color))
 
 
 def print_select(example, select, extra_pref=""):
 	# .replace("\n","\n\t\t\t")
 	def nice_matrix_line(m):
 		return " ".join("1" if v else " " for v in m)
-	print(extra_pref, "\t\t\t    ", " ".join(str(v) for v in example))
+	print(colored(extra_pref, general_color), "\t\t\t    ",
+		  colored(" ".join(str(v) for v in example), values_color))
 	matrix = select.get_vals()
-	[print(extra_pref, "\t\t\t", v, "|", nice_matrix_line(matrix[m]))
+	[print(colored(extra_pref, general_color), "\t\t\t",
+		   colored(v, values_color),
+		   colored("|", general_color), 
+		   colored(nice_matrix_line(matrix[m]), values_color))
 	 for v, m in zip(example, matrix)]
 
 

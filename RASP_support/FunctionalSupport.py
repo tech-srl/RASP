@@ -6,6 +6,8 @@ import traceback
 import sys  # for readable exception handling
 from collections.abc import Iterable
 from copy import copy
+from termcolor import colored
+from .colors import values_color, general_color, error_color
 
 name_maxlen = 30
 plain_unfinished_name = "unf"
@@ -15,6 +17,7 @@ plain_indices = "indices"
 plain_tokens = "tokens"
 
 debug = False
+
 
 # unique ids for all Unfinished objects, numbered by order of creation. ends up
 # very useful sometimes
@@ -217,23 +220,24 @@ class Unfinished:
 						raise e
 					if not global_printed.b:
 						seperator = "=" * 63
-						print(seperator)
-						print(seperator)
-						print("evaluation failed in: [", self.name,
-							  "] with exception:\n", e)
-						print(seperator)
-						print("parent values are:")
+						print(colored(f"{seperator}\n{seperator}", error_color))
+						error_msg = f"evaluation failed in: [ {self.name} ]" +\
+									f" with exception:\n {e}"
+						print(colored(error_msg, error_color))
+						print(colored(seperator, error_color))
+						print(colored("parent values are:", error_color))
 						for p in self.parents_tuple:
-							print("=============")
-							print(p.name)
-							print(p.last_res)
-						print(seperator)
-						print(seperator)
+							print(colored(
+								f"=============\n{p.name}\n{p.last_res}",
+								error_color))
+						print(colored(f"{seperator}\n{seperator}", error_color))
 						a, b, tb = sys.exc_info()
 						tt = traceback.extract_tb(tb)
 						last_call = max([i for i, t in enumerate(tt)
 										 if "in call" in str(t)])
-						print(''.join(traceback.format_list(tt[last_call+1:])))
+						traceback_msg = \
+							''.join(traceback.format_list(tt[last_call+1:]))
+						print(colored(traceback_msg, error_color))
 
 						# traceback.print_exception(a,b,tb)
 
@@ -245,7 +249,6 @@ class Unfinished:
 						return "EVALUATION FAILURE"
 
 				self.last_w, self.last_res = w, res
-
 		return res
 
 
@@ -349,7 +352,7 @@ def to_tuple_of_unfinishedseqs(seqs):
 		return tuple(seqs)
 	if isinstance(seqs, UnfinishedSequence):
 		return (seqs,)
-	print("seqs:", seqs)
+	print(colored(f"seqs: {seqs}", general_color))
 	raise BareBonesFunctionalSupportException(
 		"input to select/aggregate not an unfinished sequence or sequence of"
 		+ " unfinished sequences")

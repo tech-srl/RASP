@@ -1,6 +1,8 @@
 # dont let them mutate the things i'm allowing them to have as vals
 from copy import deepcopy
 import pprint
+from termcolor import colored
+from .colors import error_color, values_color, general_color
 
 
 class RASPError(Exception):
@@ -84,7 +86,8 @@ class Sequence:
 			res = "["+small_str(self._vals[0])+"]*"+str(len(self._vals))
 		else:
 			res = "["+", ".join(small_str(v) for v in self._vals)+"]"
-		return res + " ("+self.type+"s)"
+		return colored(res, values_color) + \
+			   colored(" ("+self.type+"s)", general_color)
 
 	def __repr__(self):
 		return str(self)

@@ -41,4 +41,5 @@ python3 -m venv ./raspenv
 source raspenv/bin/activate
 pip3 install antlr4-python3-runtime==4.9.1
 pip3 install graphviz
+pip3 install termcolor
 deactivate
