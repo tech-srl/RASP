@@ -1,4 +1,4 @@
-RASP 0.0
+RASP 0.1
 running example is: hello
 	!! antlr exception: mismatched input '}' expecting {'(', '{', 'aggregate(', '[', 'not', '-', '+', 'round', 'indicator', 'select(', 'range(', 'zip(', 'len(', Float, PosInt, String, ID} 	-- ignoring input
 not implemented this command yet! ignoring

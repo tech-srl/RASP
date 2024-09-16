@@ -1,0 +1,26 @@
+RASP 0.1
+running example is: hello
+>> >>      dict: d = {'1': 1, '2': 2, '3': 3, '4': 5, '5': 4}
+>>     value: out =  5
+>>      s-op: out
+ 	 Example: out("12345") = [1, 2, 3, 5, 4] (ints)
+>> 		!!ignoring input:
+	 index [ 4 ] not in dict.
+>> 		!!ignoring input:
+	 index [ 0 ] not in dict.
+>>     value: a =  "qwertyuioplkjhgfdsazxcvbnm"
+>>     value: out =  "u"
+>>      s-op: out
+ 	 Example: out("12345") = [q, w, e, r, t] (strings)
+>>      s-op: out
+ 	 Example: out("12345") = [q, r, u, p, j] (strings)
+>>      s-op: out
+ 	 Example: out("12345") = [5]*5 (strings)
+>> 		!!ignoring input:
+	 index into sequence has to be integer, got: indices
+>>      list: b = [5, 8, 2, 9, 4, 7, 5]
+>>      s-op: out
+ 	 Example: out("12345") = [5, 8, 2, 9, 4] (ints)
+>>     value: out =  7
+>> 
+

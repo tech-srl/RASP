@@ -33,10 +33,12 @@ def run_inputs():
 
 
 def test_broken_lib(lib):
-	os.system("cp "+joinpath(libspath, lib)+" RASP_support/rasplib.rasp")
-	os.system("python3 -m RASP_support <"+joinpath(libtestspath,
-			  "empty.txt") + " >"+joinpath(liboutspath, lib))
-	return check_equal(joinpath(liboutspath, lib), joinpath(libtgtspath, lib))
+	inlib, outlib = lib, lib.replace(".rasp", ".txt")
+	os.system("cp "+joinpath(libspath, inlib)+" RASP_support/rasplib.rasp")
+	os.system("python3 -m RASP_support <" + joinpath(libtestspath,
+			  "empty.txt") + " >" + joinpath(liboutspath, outlib))
+	return check_equal(joinpath(liboutspath, outlib), 
+					   joinpath(libtgtspath, outlib))
 
 
 def run_broken_libs():

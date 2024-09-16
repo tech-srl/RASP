@@ -1,4 +1,4 @@
-RASP 0.0
+RASP 0.1
 running example is: hello
 >>      s-op: indices
  	 Example: indices("hello") = [0, 1, 2, 3, 4] (ints)

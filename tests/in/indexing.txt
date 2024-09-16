@@ -1,0 +1,15 @@
+set example "12345"
+d = {"1":1, "2":2, "3":3, "4":5, "5":4};
+d["4"];
+d[tokens];
+d[4];
+d[indices];
+a="qwertyuioplkjhgfdsazxcvbnm";
+a[6];
+a[indices];
+a[indices*3];
+tokens[4];
+tokens[indices];
+b = [5,8,2,9,4,7,5];
+b[indices];
+b[5];
