@@ -16,6 +16,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install antlr4-python3-runtime==4.9.1
+          pip3 install termcolor
       - name: Run all the Python tests
         run: python3 tests/test_all.py
   pep8:
@@ -29,4 +30,3 @@ jobs:
         with:
           arguments: >-
             --exclude=.svn,CVS,.bzr,.hg,.git,zzantlr
-            --ignore=E121,E123,E126,E133,E226,E241,E242,E704,W503,W504,W505,W191,E101,E128
